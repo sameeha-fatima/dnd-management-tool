@@ -1,6 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import Login from Login.js;
+import Login from './Components/login';
 
 function App(props) {
     return(

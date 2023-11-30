@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
 
 const useStyles = ({
     loginContainer: {
@@ -17,7 +16,7 @@ function Login(props) {
     return(
         <div className={style.loginContainer}>
             <h1 className={style.title}>Label</h1>
-            
+
         </div>
     );
 }
