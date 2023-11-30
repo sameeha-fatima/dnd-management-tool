@@ -3,7 +3,7 @@ import Login from './Components/login';
 
 function App(props) {
     return(
-        <div className="App">
+        <div>
             < Login />
         </div>
     );
