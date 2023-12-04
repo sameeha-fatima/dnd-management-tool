@@ -4,6 +4,7 @@
 from flask import Flask
 from flask_mysqldb import MySQL
 import mysql.connector
+import hashlib
 import os
 
 app = Flask(__name__)
@@ -103,10 +104,36 @@ class MonsterAttack:
 def create_user(first_name, last_name, username, password):
     connection = getConnection()
     cursor = connection.cursor()
-    cursor.execute('INSERT INTO User(FirstName, LastName, Username, Password) VALUES (%s, %s, %s, %s)', (first_name, last_name, username, password))
+    hash_object = hashlib.sha256()
+    #hash the password
+    hash_object.update(password.encode())
+    hash_password = hash_object.hexdigest()
+    cursor.execute('INSERT INTO User(FirstName, LastName, Username, Password) VALUES (%s, %s, %s, %s)', (first_name, last_name, username, hash_password))
     connection.commit()
     cursor.close()
     connection.close()
+
+def login(username, password):
+    connection = getConnection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM User WHERE Username = %s', (username))
+    user = cursor.fetchone()
+    #unpack the user tuple
+    (user_id, first_name, last_name, user_name, encrypted_password) = user
+    hash_object = hashlib.sha256()
+    # hash the input password
+    hash_object.update(password.encode())
+    hash_password = hash_object.hexdigest()
+    cursor.close()
+    connection.close()
+    #check if the input password matches the saved password
+    if hash_password == encrypted_password:
+        #return user with userID if correct login
+        return User(**user)
+    else:
+        #return None or an error b/c didn't sign in correctly
+        return None
+    
 
 def get_user(user_id):
     connection = getConnection()
