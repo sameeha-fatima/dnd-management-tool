@@ -14,6 +14,7 @@ const Title = styled.h1`
     padding-top: 50px;
     font-family: Garamond, Georgia, serif;
     font-size: 40px;
+    text-decoration: underline double
 `;
 
 const LoginButton = styled.button`
@@ -47,6 +48,7 @@ const NUTitle = styled.h1`
     padding-top: 100px;
     font-family: Garamond, Georgia, serif;
     font-size: 40px;
+    text-decoration: underline double
 `;
 
 const NUButton = styled.button`
