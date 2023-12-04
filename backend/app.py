@@ -121,6 +121,14 @@ def get_user(user_id):
     else:
         return None
 
+@app.route('/get_user/<int:user_id>', methods=['GET'])
+def get_user_route(user_id):
+    user = get_user(user_id)
+    if user:
+        return jsonify(vars(user))
+    else:
+        return jsonify({'error': 'User not found'}), 404
+
 def get_all_users():
     connection = getConnection()
     cursor = connection.cursor(dictionary=True)
@@ -190,6 +198,30 @@ def create_stat(strength, dexterity, constitution, intelligence, wisdom, charism
     cursor.close()
     connection.close()
 
+def update_stat(stat_id, strength, dexterity, constitution, intelligence, wisdom, charisma):
+    if stat_id:
+        connection = getConnection()
+        cursor = connection.cursor()
+        cursor.execute('UPDATE Stat SET Strength=%s, Dexterity=%s, Constitution=%s, Intelligence=%s, Wisdom=%s, Charisma=%s WHERE StatID=%s',
+                        (strength, dexterity, constitution, intelligence, wisdom, charisma, stat_id))
+        connection.commit()
+        cursor.close()
+        connection.close()
+    else:
+        create_stat(strength, dexterity, constitution, intelligence, wisdom, charisma)
+
+def get_stat(stat_id):
+    connection = getConnection()
+    cursor.execute('SELECT * FROM Stat WHERE StatID = %s', (stat_id,))
+    stat_id = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    if stat_id:
+        return Stat(**stat_id)
+    else:
+        return None
+
 def get_all_stats():
     connection = getConnection()
     cursor.execute('SELECT * FROM Stat')
@@ -206,6 +238,38 @@ def create_character(character_name, job, race, session_id, stat_id):
     connection.commit()
     cursor.close()
     connection.close()
+
+def update_character(character_id, character_name, job, race, session_id, stat_id):
+    if (character_id is not None and character_id != ''):
+        connection = getConnection()
+        cursor = connection.cursor()
+        cursor.execute('UPDATE Character SET CharacterName=%s, Job=%s, Race=%s, SessionID=%s, StatID=%s WHERE CharacterID=%s',
+                        (character_name, job, race, session_id, stat_id, character_id))
+        connection.commit()
+        cursor.close()
+        connection.close()
+    else:
+        create_character(character_name, job, race, session_id, stat_id)
+
+def get_character(character_id):
+    connection = getConnection()
+    cursor.execute('SELECT * FROM Character WHERE CharacterID = %s', (character_id,))
+    character_id = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    if character_id:
+        return Character(**character_id)
+    else:
+        return None
+
+@app.route('/get_character/<int:character_id>', methods=['GET'])
+def get_character_route(character_id):
+    character = get_character(character_id)
+    if character:
+        return jsonify(vars(character))
+    else:
+        return jsonify({'error': 'Character not found'}), 404
 
 def get_all_characters():
     connection = getConnection()
@@ -253,6 +317,26 @@ def delete_monster(monster_id):
     cursor.close()
     connection.close()
 
+def get_monster(monster_id):
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM Monster WHERE MonsterID = %s', (monster_id,))
+    monster_town = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    if monster_town:
+        return Monster(**monster_town)
+    else:
+        return None
+
+@app.route('/get_monster/<int:monster_id>', methods=['GET'])
+def get_monster_route(monster_id):
+    monster = get_monster(monster_id)
+    if monster:
+        return jsonify(vars(monster))
+    else:
+        return jsonify({'error': 'Monster not found'}), 404
+
 def get_all_monsters():
     connection = getConnection()
     cursor.execute('SELECT * FROM Monster')
@@ -269,6 +353,18 @@ def create_player(_class, alignment, character_id):
     connection.commit()
     cursor.close()
     connection.close()
+
+def update_player(player_id, _class, alignment, character_id):
+    if player_id:
+        connection = getConnection()
+        cursor = connection.cursor()
+        cursor.execute('UPDATE Player SET Class=%s, Alignment=%s, CharacterID=%s WHERE PlayerID=%s',
+                        (_class, alignment, character_id, player_id))
+        connection.commit()
+        cursor.close()
+        connection.close()
+    else:
+        create_player( _class, alignment, character_id)
 
 def get_all_players():
     connection = getConnection()
@@ -287,6 +383,18 @@ def create_attack(attack_name, damage, session_id):
     cursor.close()
     connection.close()
 
+def update_attack(attack_id, attack_name, damage, session_id):
+    if attack_id:
+        connection = getConnection()
+        cursor = connection.cursor()
+        cursor.execute('UPDATE Attack SET AttackName=%s, Damage=%s, SessionID=%s WHERE AttackID=%s',
+                        (attack_name, damage, session_id, attack_id))
+        connection.commit()
+        cursor.close()
+        connection.close()
+    else:
+        create_attack(attack_name, damage, session_id)
+
 def delete_attack(attack_id):
     connection = getConnection()
     cursor = connection.cursor()
@@ -294,6 +402,26 @@ def delete_attack(attack_id):
     connection.commit()
     cursor.close()
     connection.close()
+
+def get_attack(attack_id):
+    connection = getConnection()
+    cursor.execute('SELECT * FROM Attack WHERE AttackID = %s', (attack_id,))
+    attack_id = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    if attack_id:
+        return Attack(**attack_id)
+    else:
+        return None
+
+@app.route('/get_attack/<int:attack_id>', methods=['GET'])
+def get_attack_route(attack_id):
+    attack = get_attack(attack_id)
+    if attack:
+        return jsonify(vars(attack))
+    else:
+        return jsonify({'error': 'Attack not found'}), 404
 
 def get_all_attacks():
     connection = getConnection()
@@ -337,3 +465,6 @@ def get_all_monster_attacks():
     cursor.close()
     connection.close()
     return monster_attack
+
+if __name__ == '__main__':
+    app.run(debug=True)
