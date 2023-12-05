@@ -1,6 +1,7 @@
 import React from "react";
 import styled from 'styled-components';
 import EntityFilterDropDown from "./EntityFilterDropDown/EntityFilterDropDown";
+import { useNavigate } from "react-router-dom";
 
 const HeaderContainer = styled.div`
     display: flex;
@@ -34,6 +35,8 @@ const StyledButton = styled.button`
 
 function SessionHeader(props) {
 
+    const navigation = useNavigate();
+
     const deleteSession = () => {
         if (window.confirm("Are you sure you want to delete this session?") == false) {
             return;
@@ -43,7 +46,7 @@ function SessionHeader(props) {
     return (
         <HeaderContainer>
             <UpperHeaderContainer>
-                <StyledButton style={{"background-color": 'blue'}}>Home</StyledButton>
+                <StyledButton style={{"background-color": 'blue'}} onClick={() => navigation("/sessionControl")}>Home</StyledButton>
                 <StyledButton style={{"background-color": 'red'}} onClick={deleteSession}>Delete Session</StyledButton>
             </UpperHeaderContainer>
             <LowerHeaderContainer>
