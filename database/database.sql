@@ -2,7 +2,7 @@ CREATE TABLE User (
     UserID int UNIQUE PRIMARY KEY AUTO_INCREMENT,
     FirstName varchar(32),
     LastName varchar(32),
-    Username varchar(32),
+    Username varchar(32) UNIQUE,
     Password varchar(32)
 );
 
