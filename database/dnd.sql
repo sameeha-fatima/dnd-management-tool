@@ -7,11 +7,13 @@ CREATE TABLE User (
     FirstName varchar(32),
     LastName varchar(32),
     Username varchar(32) UNIQUE,
-    Password varchar(32)
+    Password varchar(64)
 );
 
-INSERT INTO User VALUES (1, 'Adam', 'Gaweda', 'theGoat23', 'password');
-INSERT INTO User VALUES (NULL, 'David', 'Jordan', 'bestTA', 'database');
+-- password is password
+INSERT INTO User VALUES (1, 'Adam', 'Gaweda', 'theGoat23', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8');
+-- password is 12345678
+INSERT INTO User VALUES (NULL, 'David', 'Jordan', 'bestTA', 'ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f');
 
 CREATE TABLE Session (
     SessionID int UNIQUE PRIMARY KEY AUTO_INCREMENT,

@@ -1,14 +1,15 @@
 # pip install Flask-MySQLdb
 # pip install mysql-connector-python
 
-from flask import Flask
+from flask import Flask, jsonify, request
+from db import *
 
 app = Flask(__name__)
 
 #####################
 # USER FUNCTIONS
 #####################
-@app.route('/create_user_route', methods=['POST'])
+@app.route('/user', methods=['POST'])
 def create_user_route():
     data = request.get_json()
 
@@ -18,10 +19,10 @@ def create_user_route():
     password = data.get('password')
 
     create_user(first_name, last_name, username, password)
-
+    
     return jsonify({'message': 'User created successfully'})
   
-@app.route('/get_user/<int:user_id>', methods=['GET'])
+@app.route('/user/<int:user_id>', methods=['GET'])
 def get_user_route(user_id):
     user = get_user(user_id)
     if user:
@@ -29,7 +30,7 @@ def get_user_route(user_id):
     else:
         return jsonify({'error': 'User not found'}, 404)
 
-@app.route('/delete_user_route', methods=['DELETE'])
+@app.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_user_route():
     data = request.get_json()
     user_id = data.get('user_id')
@@ -43,7 +44,15 @@ def delete_user_route():
 #####################
 # SESSION FUNCTIONS
 #####################
-@app.route('/create_session_route', methods=['POST'])
+@app.route('/session', methods=['GET'])
+def get_session_route():
+    data = request.get_json()
+
+    session_name = data.get('session_name')
+    user_id = data.get('user_id')
+    create_session(session_name, user_id)
+
+@app.route('/session', methods=['POST'])
 def create_session_route():
     data = request.get_json()
 
@@ -54,7 +63,7 @@ def create_session_route():
 #####################
 # CHARACTER FUNCTIONS
 #####################
-@app.route('/get_character/<int:character_id>', methods=['GET'])
+@app.route('/character/<int:character_id>', methods=['GET'])
 def get_character_route(character_id):
     character = get_character(character_id)
     if character:
@@ -65,7 +74,7 @@ def get_character_route(character_id):
 #####################
 # MONSTER FUNCTIONS
 #####################
-@app.route('/get_monster/<int:monster_id>', methods=['GET'])
+@app.route('/monster/<int:monster_id>', methods=['GET'])
 def get_monster_route(monster_id):
     monster = get_monster(monster_id)
     if monster:
@@ -76,7 +85,7 @@ def get_monster_route(monster_id):
 #####################
 # ATTACK FUNCTIONS
 #####################
-@app.route('/get_attack/<int:attack_id>', methods=['GET'])
+@app.route('/attack/<int:attack_id>', methods=['GET'])
 def get_attack_route(attack_id):
     attack = get_attack(attack_id)
     if attack:

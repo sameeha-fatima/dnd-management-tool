@@ -1,10 +1,9 @@
 import os
-import mysql.connector
 import hashlib
-from flask_mysqldb import MySQL
+import mysql.connector
 from dotenv import load_dotenv
+from classes import *
 
-mysql = MySQL(app)
 load_dotenv()
 
 #####################
