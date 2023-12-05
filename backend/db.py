@@ -1,118 +1,26 @@
-# pip install Flask-MySQLdb
-# pip install mysql-connector-python
-
-from flask import Flask
-from flask_mysqldb import MySQL
+import os
 import mysql.connector
 import hashlib
-import os
-
-app = Flask(__name__)
-
-app.config['MYSQL_HOST'] = ''
-app.config['MYSQL_USER'] = ''
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = ''
+from flask_mysqldb import MySQL
+from dotenv import load_dotenv
 
 mysql = MySQL(app)
+load_dotenv()
 
+#####################
+# BASIC DB CONNECTION
+#####################
 def getConnection():
     return mysql.connector.connect(
-        host = app.config['MYSQL_HOST'],
-        user = app.config['MYSQL_USER'],
-        password = app.config['MYSQL_PASSWORD'],
-        database = app.config['MYSQL_DB']
+        host = os.getenv('MYSQL_HOST'),
+        user = os.getenv('MYSQL_USER'),
+        password = os.getenv('MYSQL_PASSWORD'),
+        database = os.getenv('MYSQL_DB')
     )
 
-class User:
-    def __init__(this, user_id, first_name, last_name, username, password):
-        this.user_id = user_id
-        this.first_name = first_name
-        this.last_name = last_name
-        this.username = username
-        this.password = password
-
-class Session:
-    def __init__(this, session_id, user_id):
-        this.session_id = session_id
-        this.user_id = user_id
-
-class Town:
-    def __init__(this, town_id, town_name, session_id):
-        this.town_id = town_id
-        this.town_name = town_name
-        this.session_id = session_id
-
-class Stat:
-    def __init__(this, stat_id, strength, dexterity, constitution, intelligence, wisdom, charisma):
-        this.stat_id = stat_id
-        this.strength = strength
-        this.dexterity = dexterity
-        this.constitution = constitution
-        this.intelligence = intelligence
-        this.wisdom = wisdom
-        this.charisma = charisma
-
-class Character:
-    def __init__(this, character_id, character_name, job, race, session_id, stat_id):
-        this.character_id = character_id
-        this.character_name = character_name
-        this.job = job
-        this.race = race
-        this.session_id = session_id
-        this.stat_id = stat_id
-
-class CharacterTown:
-    def __init__(this, character_town_id, town_id, character_id):
-        this.character_town_id = character_town_id
-        this.town_id = town_id
-        this.character_id = character_id
-
-class Monster:
-    def __init__(this, monster_id, monster_name, session_id, stat_id):
-        this.monster_id = monster_id
-        this.monster_name = monster_name
-        this.session_id = session_id
-        this.stat_id = stat_id
-
-class Player:
-    def __init__(this, player_id, _class, alignment, character_id):
-        this.player_id = player_id
-        this._class = _class
-        this.alignment = alignment
-        this.character_id = character_id
-
-class Attack:
-    def __init__(this, attack_id, attack_name, damage, session_id):
-        this.attack_id = attack_id
-        this.attack_name = attack_name
-        this.damage = damage
-        this.session_id = session_id
-
-class PlayerAttack:
-    def __init__(this, player_attack_id, attack_id, player_id):
-        this.player_attack_id = player_attack_id
-        this.attack_id = attack_id
-        this.player_id = player_id
-
-class MonsterAttack:
-    def __init__(this, monster_attack_id, attack_id, monster_id):
-        this.monster_attack_id = monster_attack_id
-        this.attack_id = attack_id
-        this.monster_id = monster_id
-
-def create_user(first_name, last_name, username, password):
-    connection = getConnection()
-    cursor = connection.cursor()
-    hash_object = hashlib.sha256()
-    #hash the password
-    hash_object.update(password.encode())
-    hash_password = hash_object.hexdigest()
-    cursor.execute('INSERT INTO User(FirstName, LastName, Username, Password) VALUES (%s, %s, %s, %s)', (first_name, last_name, username, hash_password))
-    connection.commit()
-    cursor.close()
-    connection.close()
-
+#####################
+# USER FUNCTIONS
+#####################
 def login(username, password):
     connection = getConnection()
     cursor = connection.cursor(dictionary=True)
@@ -133,8 +41,19 @@ def login(username, password):
     else:
         #return None or an error b/c didn't sign in correctly
         return None
-    
 
+def create_user(first_name, last_name, username, password):
+    connection = getConnection()
+    cursor = connection.cursor()
+    hash_object = hashlib.sha256()
+    #hash the password
+    hash_object.update(password.encode())
+    hash_password = hash_object.hexdigest()
+    cursor.execute('INSERT INTO User(FirstName, LastName, Username, Password) VALUES (%s, %s, %s, %s)', (first_name, last_name, username, hash_password))
+    connection.commit()
+    cursor.close()
+    connection.close()
+    
 def get_user(user_id):
     connection = getConnection()
     cursor = connection.cursor(dictionary=True)
@@ -148,14 +67,6 @@ def get_user(user_id):
     else:
         return None
 
-@app.route('/get_user/<int:user_id>', methods=['GET'])
-def get_user_route(user_id):
-    user = get_user(user_id)
-    if user:
-        return jsonify(vars(user))
-    else:
-        return jsonify({'error': 'User not found'}), 404
-
 def get_all_users():
     connection = getConnection()
     cursor = connection.cursor(dictionary=True)
@@ -166,6 +77,17 @@ def get_all_users():
     connection.close()
     return users
 
+def delete_user(user_id):
+    connection = getConnection()
+    cursor = connection.cursor()
+    cursor.execute('DELETE FROM User WHERE UserID = %s', (user_id,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+#####################
+# SESSION FUNCTIONS
+#####################
 def create_session(session_name, user_id):
     connection = getConnection()
     cursor = connection.cursor()
@@ -192,6 +114,9 @@ def get_all_sessions():
     connection.close()
     return session
 
+#####################
+# TOWN FUNCTIONS
+#####################
 def create_town(town_name, session_id):
     connection = getConnection()
     cursor = connection.cursor()
@@ -217,6 +142,9 @@ def get_all_towns():
     connection.close()
     return town
 
+#####################
+# STAT FUNCTIONS
+#####################
 def create_stat(strength, dexterity, constitution, intelligence, wisdom, charisma):
     connection = getConnection()
     cursor = connection.cursor()
@@ -258,6 +186,9 @@ def get_all_stats():
     connection.close()
     return stat
 
+#####################
+# CHARACTER FUNCTIONS
+#####################
 def create_character(character_name, job, race, session_id, stat_id):
     connection = getConnection()
     cursor = connection.cursor()
@@ -290,14 +221,6 @@ def get_character(character_id):
     else:
         return None
 
-@app.route('/get_character/<int:character_id>', methods=['GET'])
-def get_character_route(character_id):
-    character = get_character(character_id)
-    if character:
-        return jsonify(vars(character))
-    else:
-        return jsonify({'error': 'Character not found'}), 404
-
 def get_all_characters():
     connection = getConnection()
     cursor.execute('SELECT * FROM Character')
@@ -328,6 +251,9 @@ def get_character_town(character_town_id):
     else:
         return None
 
+#####################
+# MONSTER FUNCTIONS
+#####################
 def create_monster(monster_name, session_id, stat_id):
     connection = getConnection()
     cursor = connection.cursor()
@@ -356,14 +282,6 @@ def get_monster(monster_id):
     else:
         return None
 
-@app.route('/get_monster/<int:monster_id>', methods=['GET'])
-def get_monster_route(monster_id):
-    monster = get_monster(monster_id)
-    if monster:
-        return jsonify(vars(monster))
-    else:
-        return jsonify({'error': 'Monster not found'}), 404
-
 def get_all_monsters():
     connection = getConnection()
     cursor.execute('SELECT * FROM Monster')
@@ -373,6 +291,9 @@ def get_all_monsters():
     connection.close()
     return monster
 
+#####################
+# PLAYER FUNCTIONS
+#####################
 def create_player(_class, alignment, character_id):
     connection = getConnection()
     cursor = connection.cursor()
@@ -402,6 +323,9 @@ def get_all_players():
     connection.close()
     return player
 
+#####################
+# ATTACK FUNCTIONS
+#####################
 def create_attack(attack_name, damage, session_id):
     connection = getConnection()
     cursor = connection.cursor()
@@ -441,14 +365,6 @@ def get_attack(attack_id):
         return Attack(**attack_id)
     else:
         return None
-
-@app.route('/get_attack/<int:attack_id>', methods=['GET'])
-def get_attack_route(attack_id):
-    attack = get_attack(attack_id)
-    if attack:
-        return jsonify(vars(attack))
-    else:
-        return jsonify({'error': 'Attack not found'}), 404
 
 def get_all_attacks():
     connection = getConnection()
@@ -492,6 +408,3 @@ def get_all_monster_attacks():
     cursor.close()
     connection.close()
     return monster_attack
-
-if __name__ == '__main__':
-    app.run(debug=True)
