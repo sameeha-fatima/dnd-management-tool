@@ -1,7 +1,7 @@
 # pip install Flask-MySQLdb
 # pip install mysql-connector-python
 
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_mysqldb import MySQL
 import mysql.connector
 import hashlib
@@ -495,3 +495,219 @@ def get_all_monster_attacks():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+
+
+
+
+
+
+#ADDED Login, Session stuff, User stuff, and creates for all objects
+@app.route('/login_route', methods=['POST'])
+def login_route():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+
+    if username and password:
+        user = login(username, password)
+        if user is None:
+            return jsonify({'error': 'Invalid username or password'}), 401
+    else:
+        return jsonify({'error': 'Username or password is missing'}), 400
+
+@app.route('/create_user_route', methods=['POST'])
+def create_user_route():
+    data = request.get_json()
+
+    first_name = data.get('first_name')
+    last_name = data.get('last_name')
+    username = data.get('username')
+    password = data.get('password')
+
+    create_user(first_name, last_name, username, password)
+
+    return jsonify({'message': 'User created successfully'})
+
+def delete_user(user_id):
+    connection = getConnection()
+    cursor = connection.cursor()
+    cursor.execute('DELETE FROM User WHERE UserID = %s', (user_id,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+@app.route('/delete_user_route', methods=['DELETE'])
+def delete_user_route():
+    data = request.get_json()
+    user_id = data.get('user_id')
+
+    if user_id is not None:
+        delete_user(user_id)
+        return jsonify({'message': 'User deleted successfully'})
+    else:
+        return jsonify({'error': 'UserID is missing or incorrect'}), 400
+
+@app.route('/create_session_route', methods=['POST'])
+def create_session_route():
+    data = request.get_json()
+
+    session_name = data.get('session_name')
+    user_id = data.get('user_id')
+    create_session(session_name, user_id)
+
+    return jsonify({'message': 'Session created successfully'})
+
+def get_session(session_id):
+    connection = getConnection()
+    cursor.execute('SELECT * FROM Session WHERE SessionID = %s', (session_id,))
+    session_id = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    if session_id:
+        return Session(**session_id_id)
+    else:
+        return None
+
+@app.route('/get_session/<int:session_id>', methods=['GET'])
+def get_session_route(session_id):
+    session = get_session(session_id)
+    if session:
+        return jsonify(vars(session))
+    else:
+        return jsonify({'error': 'Session not found'}), 404
+
+@app.route('/get_all_sessions_route', methods=['GET'])
+def get_all_sessions_route():
+    sessions = get_all_sessions()
+    return jsonify(sessions)
+
+def delete_session(session_id):
+    connection = getConnection()
+    cursor = connection.cursor()
+    cursor.execute('DELETE FROM Session WHERE SessionID = %s', (session_id,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+@app.route('/delete_session_route', methods=['DELETE'])
+def delete_session_route():
+    data = request.get_json()
+    session_id = data.get('session_id')
+
+    if session_id is not None:
+        delete_session(session_id)
+        return jsonify({'message': 'Session deleted successfully'})
+    else:
+        return jsonify({'error': 'SessionID is missing or incorrect'}), 400
+
+@app.route('/create_town_route', methods=['POST'])
+def create_session_route():
+    data = request.get_json()
+
+    town_name = data.get('town_name')
+    session_id = data.get('session_id')
+    create_town(town_name, session_id)
+
+    return jsonify({'message': 'Town created successfully'})
+
+@app.route('/create_stat_route', methods=['POST'])
+def create_stat_route():
+    data = request.get_json()
+
+    strength = data.get('strength')
+    dexterity = data.get('dexterity')
+    constitution = data.get('constitution')
+    intelligence = data.get('intelligence')
+    wisdom = data.get('wisdom')
+    charisma = data.get('charisma')
+
+    create_stat(strength, dexterity, constitution, intelligence, wisdom, charisma)
+
+    return jsonify({'message': 'Stat created successfully'})
+
+@app.route('/create_character_route', methods=['POST'])
+def create_character_route():
+    data = request.get_json()
+
+    character_name = data.get('character_name')
+    job = data.get('job')
+    race = data.get('race')
+    session_id = data.get('session_id')
+    stat_id = data.get('stat_id')
+
+    create_character(character_name, job, race, session_id, stat_id)
+
+    return jsonify({'message': 'Character created successfully'})
+
+@app.route('/create_character_town_route', methods=['POST'])
+def create_character_town_route():
+    data = request.get_json()
+
+    town_id = data.get('town_id')
+    character_id = data.get('character_id')
+
+    create_character_town(town_id, character_id)
+
+    return jsonify({'message': 'CharacterTown created successfully'})
+
+@app.route('/create_monster_route', methods=['POST'])
+def create_monster_route():
+    data = request.get_json()
+
+    monster_name = data.get('monster_name')
+    session_id = data.get('session_id')
+    stat_id = data.get('stat_id')
+
+    create_monster(monster_name, session_id, stat_id)
+
+    return jsonify({'message': 'Monster created successfully'})
+
+@app.route('/create_player_route', methods=['POST'])
+def create_player_route():
+    data = request.get_json()
+
+    _class = data.get('_class')
+    alignment = data.get('alignment')
+    character_id = data.get('character_id')
+
+    create_player(_class, alignment, character_id)
+
+    return jsonify({'message': 'Player created successfully'})
+
+@app.route('/create_attack_route', methods=['POST'])
+def create_attack_route():
+    data = request.get_json()
+
+    attack_name = data.get('attack_name')
+    damage = data.get('damage')
+    session_id = data.get('session_id')
+
+    create_attack(attack_name, damage, session_id)
+
+    return jsonify({'message': 'Attack created successfully'})
+
+@app.route('/create_player_attack_route', methods=['POST'])
+def create_player_attack_route():
+    data = request.get_json()
+
+    attack_id = data.get('attack_id')
+    player_id = data.get('player_id')
+
+    create_player_attack(attack_id, player_id)
+
+    return jsonify({'message': 'PlayerAttack created successfully'})
+
+@app.route('/create_monster_attack_route', methods=['POST'])
+def create_monster_attack_route():
+    data = request.get_json()
+
+    attack_id = data.get('attack_id')
+    monster_id = data.get('monster_id')
+
+    create_attack(attack_id, monster_id)
+
+    return jsonify({'message': 'MonsterAttack created successfully'})
