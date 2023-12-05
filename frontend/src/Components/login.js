@@ -1,4 +1,4 @@
-import React from 'react';
+import { React, useReducer, useRef } from 'react';
 
 import styled from 'styled-components';
 
@@ -63,22 +63,58 @@ const NUButton = styled.button`
     font-size: medium;
 `;
 
+const credentialsFormat = {
+    username: "",
+    password: "",
+}
+
+function reducer(state, action) {
+    switch (action.type) {
+        case 'set_username': {
+            return {
+                ...state,
+                username: action.payload
+            };
+        }
+        case 'set_password': {
+            return {
+                ...state,
+                password: action.payload
+            };
+        }
+    }
+}
+
 function Login(props) {
+    const [state, dispatch] = useReducer(reducer, credentialsFormat);
+    const formRef = useRef();
+
+    const loginUser = () => {
+        if (!formRef.current.reportValidity()) {
+            return;
+        }
+        //do api call. If login creds are correct redirect to session control page, if not show error that login creds are invalid
+    }
+
+    const createAccount = () => {
+        //do api cal and redirect to createAccount page
+    }
+
     return(
         <GridContainer>
             <div>
                 <Title>Login</Title>
-                <LoginForm action="/action_page.php">
+                <LoginForm ref={formRef}>
                     <LoginLabel for="username">Username</LoginLabel><br></br>
-                    <LoginInput id="username" name="username" placeholder="username"></LoginInput><br></br><br></br>
+                    <LoginInput id="username" type='text' placeholder="username" value={state.username} onChange={(event) => dispatch({ type: 'set_username', payload: event.target.value })}></LoginInput><br></br><br></br>
                     <LoginLabel for="password">Password</LoginLabel><br></br>
-                    <LoginInput id="password" name="password" placeholder="password"></LoginInput><br></br><br></br>
-                    <LoginButton type="submit">Login</LoginButton>
+                    <LoginInput id="password" type='text' placeholder="password" value={state.password} onChange={(event) => dispatch({ type: 'set_password', payload: event.target.value })}></LoginInput><br></br><br></br>
+                    <LoginButton type="submit" onClick={loginUser}>Login</LoginButton>
                 </LoginForm>
             </div>
             <NUBackground>
                 <NUTitle>New User?</NUTitle>
-                <NUButton>Create Account</NUButton>
+                <NUButton type="submit" onClick={createAccount}>Create Account</NUButton>
             </NUBackground>
         </GridContainer>
     );
