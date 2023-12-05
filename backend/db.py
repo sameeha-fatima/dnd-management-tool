@@ -113,6 +113,18 @@ def get_all_sessions():
     connection.close()
     return session
 
+def get_session(session_id):
+    connection = getConnection()
+    cursor.execute('SELECT * FROM Session WHERE SessionID = %s', (session_id,))
+    session_id = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    if session_id:
+        return Session(**session_id_id)
+    else:
+        return None
+
 #####################
 # TOWN FUNCTIONS
 #####################

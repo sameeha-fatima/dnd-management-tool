@@ -17,7 +17,7 @@ INSERT INTO User VALUES (NULL, 'David', 'Jordan', 'bestTA', 'ef797c8118f02dfb649
 
 CREATE TABLE Session (
     SessionID int UNIQUE PRIMARY KEY AUTO_INCREMENT,
-    SessionName varchar(32),
+    SessionName varchar(32) UNIQUE,
     UserID int NOT NULL,
     FOREIGN KEY (UserID) REFERENCES User(UserID)
 );
@@ -122,3 +122,87 @@ CREATE TABLE MonsterAttack (
 );
 
 INSERT INTO MonsterAttack VALUES (NULL, 2, 1);
+
+-- Check if username already exists before creating a user
+DELIMITER //
+CREATE PROCEDURE UsernameExists(
+    IN _user_name varchar(32),
+    OUT _result INT
+)
+BEGIN
+    DECLARE existing_count INT;
+    SELECT COUNT(*) INTO existing_count
+    FROM User
+    WHERE Username = _user_name;
+
+    IF existing_count > 0 THEN
+        SET _result = 0;
+    ELSE
+        SET _result = 1;
+    END IF;
+END //
+DELIMITER ;
+
+--Check if session name already exists, if it does, do not create session
+DELIMITER //
+CREATE PROCEDURE CreateSession(
+    IN _session_id INT,
+    IN _session_name varchar(32),
+    IN _user_id INT,
+    OUT _result INT
+)
+BEGIN
+    DECLARE _duplicate_name BOOLEAN DEFAULT FALSE;
+    SELECT TRUE INTO _duplicate_name
+    FROM Session
+    WHERE SessionName = _session_name AND UserID = _user_id;
+
+    IF _duplicate_name THEN
+        SET _result = 0;
+    ELSE:
+        SET _result = 1;
+    END IF;
+END //
+DELIMITER ;
+
+-- Before deleting player, delete the rows that are associated with player
+DELIMETER //
+CREATE TRIGGER BeforeDeletingPlayer
+BEFORE DELIMETERON PLAYER FOR EACH ROW
+BEGIN
+    DECLARE character_id INT;
+    DECLARE stat_id INT;
+    DECLARE attack_id INT;
+
+    SELECT CharacterID, StatID
+    INTO character_id, stat_id
+    FROM Character
+    WHERE PlayerID = OLD.PlayerID;
+
+    DELETE FROM PlayerAttack
+    WHERE AttackID = (SELECT AttackID FROM PlayerAttack WHERE PlayerID = player_id)
+
+    DELETE FROM Character
+    WHERE CharacterID = character_id
+
+    DELETE FROM Stat
+    WHERE StatID = stat_id
+DELIMETER ;
+
+-- Before deleting a character, delete the rows that are associated with character
+DELIMETER //
+CREATE TRIGGER BeforeDeletingCharacter
+BEFORE DELETE
+ON Character FOR EACH ROW
+BEGIN
+    DECLARE stat_id INT;
+
+    SELECT StatID
+    INTO stat_id
+    FROM Stat
+    Where StatID = OLD.StatID;
+
+    DELETE FROM Stat
+    WHERE StatID = stat_id;
+END //
+DELIMETER ;
