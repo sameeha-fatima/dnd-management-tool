@@ -1,5 +1,5 @@
 import { React, useReducer, useRef } from 'react';
-
+import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 
 const GridContainer = styled.div`
@@ -88,16 +88,18 @@ function reducer(state, action) {
 function Login(props) {
     const [state, dispatch] = useReducer(reducer, credentialsFormat);
     const formRef = useRef();
+    const navigation = useNavigate();
 
     const loginUser = () => {
         if (!formRef.current.reportValidity()) {
             return;
         }
         //do api call. If login creds are correct redirect to session control page, if not show error that login creds are invalid
-    }
-
-    const createAccount = () => {
-        //do api cal and redirect to createAccount page
+        // if (user != null) {
+        //     () => navigation("/sessionControl", {state: user.userId})
+        // } else {
+        //     return "error: invalid username or password";
+        // }
     }
 
     return(
@@ -114,7 +116,7 @@ function Login(props) {
             </div>
             <NUBackground>
                 <NUTitle>New User?</NUTitle>
-                <NUButton type="submit" onClick={createAccount}>Create Account</NUButton>
+                <NUButton onClick={() => navigation("/createAccount")}>Create Account</NUButton>
             </NUBackground>
         </GridContainer>
     );

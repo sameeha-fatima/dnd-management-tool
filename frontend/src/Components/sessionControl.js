@@ -1,5 +1,5 @@
-import React from 'react';
-
+import { React, useReducer, useRef } from 'react';
+import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 
 const GridContainer = styled.div`
@@ -45,16 +45,49 @@ const ESBackground = styled.div`
     border: solid;
 `;
 
+const LogoutButton = styled.button`
+    color: white;
+    background-color: orange;
+    text-align: center;
+    margin: 5px 2.5px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: small;
+    border: solid;
+`;
+
+const nameFormat = {
+    name: "",
+}
+
+function reducer(state, action) {
+    switch (action.type) {
+        case 'set_name': {
+            return {
+                ...state,
+                username: action.payload
+            };
+        }
+    }
+}
+
 function SessionControl(props) {
+    const navigation = useNavigate();
+    const [state, dispatch] = useReducer(reducer, credentialsFormat);
+    const formRef = useRef();
+//  const sessionList = api call for session list
     return(
         <GridContainer>
             <NSConstainer>
+                <LogoutButton onClick={() => navigation("/")}>LOGOUT</LogoutButton>
                 <Title>New Session</Title>
-                <form action="/action_page.php">
+                <form ref={formRef}>
                     <Label for="session name">New Session</Label><br></br>
-                    <input font-size="session name" id="session name" name="session name" placeholder="Session Name"></input>
+                    <input id="session name" type='text' placeholder="Session Name" value={state.name} onChange={(event) => dispatch({ type: 'set_name', payload: event.target.value })}></input>
                     <br></br><br></br><br></br>
-                    <Button type="submit">Create New Session</Button>
+                    <Button type="submit" onClick={() => navigation("/session/:sessionId")}>Create New Session</Button>
                 </form>
             </NSConstainer>
             <ESBackground>
