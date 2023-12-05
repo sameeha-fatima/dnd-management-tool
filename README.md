@@ -7,7 +7,7 @@
 - Sameeha Fatima  
 - Sean Yi 
 
-# Database Setup
+## Database Setup
 
 ## Backend Setup
 Install server dependencies:
