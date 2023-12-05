@@ -51,7 +51,7 @@ const SaveButton = styled.button`
 `;
 
 
-const credentialsFormat = {
+const attackFormat = {
     name: "",
     damage: 0
 }
@@ -74,7 +74,7 @@ function reducer(state, action) {
 }
 
 function AttackControl(props) {
-    const [state, dispatch] = useReducer(reducer, credentialsFormat);
+    const [state, dispatch] = useReducer(reducer, attackFormat);
     const formRef = useRef();
 
     //Checks the validity of user inputs and creates a new user account
