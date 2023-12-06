@@ -140,7 +140,8 @@ BEGIN
     ELSE
         SET _result = 1;
     END IF;
-END //
+END;
+//
 DELIMITER ;
 
 --Check if session name already exists, if it does, do not create session
@@ -162,13 +163,15 @@ BEGIN
     ELSE:
         SET _result = 1;
     END IF;
-END //
+END; 
+//
 DELIMITER ;
 
 -- Before deleting player, delete the rows that are associated with player
-DELIMETER //
+DELIMITER //
 CREATE TRIGGER BeforeDeletingPlayer
-BEFORE DELIMETERON PLAYER FOR EACH ROW
+BEFORE DELETE ON Player 
+FOR EACH ROW
 BEGIN
     DECLARE character_id INT;
     DECLARE stat_id INT;
@@ -187,13 +190,14 @@ BEGIN
 
     DELETE FROM Stat
     WHERE StatID = stat_id
-DELIMETER ;
+END;
+//
+DELIMITER ;
 
 -- Before deleting a character, delete the rows that are associated with character
-DELIMETER //
+DELIMITER //
 CREATE TRIGGER BeforeDeletingCharacter
-BEFORE DELETE
-ON Character FOR EACH ROW
+BEFORE DELETE ON Character FOR EACH ROW
 BEGIN
     DECLARE stat_id INT;
 
@@ -204,11 +208,12 @@ BEGIN
 
     DELETE FROM Stat
     WHERE StatID = stat_id;
-END //
-DELIMETER ;
+END; 
+//
+DELIMITER ;
 
 -- Before deleting a session, delete everything associated with the session
-DELIMETER //
+DELIMITER //
 CREATE TRIGGER BeforeDeletingSession
 BEFORE DELETE ON Session 
 FOR EACH ROW
@@ -281,10 +286,10 @@ BEGIN
 
 END;
 //
-DELIMETER ;
+DELIMITER ;
 
 -- Before Deleting Town, delete the character towns
-DELIMETER //
+DELIMITER //
 CREATE TRIGGER BeforeDeletingTown
 BEFORE DELETE ON Town 
 FOR EACH ROW
@@ -301,10 +306,10 @@ BEGIN
 
 END;
 //
-DELIMETER ;
+DELIMITER ;
 
 --Before deleting monsters, delete everything tied to the monster
-DELIMETER //
+DELIMITER //
 CREATE TRIGGER BeforeDeletingMonster
 BEFORE DELETE ON Monster 
 FOR EACH ROW
@@ -325,10 +330,10 @@ BEGIN
     WHERE StatID = stat_id;
 END;
 //
-DELIMETER ;
+DELIMITER ;
 
 --Before deleting an attack, remove related player/monster attacks
-DELIMETER //
+DELIMITER //
 CREATE TRIGGER BeforeDeletingAttack
 BEFORE DELETE ON Attack 
 FOR EACH ROW
@@ -348,4 +353,4 @@ BEGIN
 
 END;
 //
-DELIMETER ;
+DELIMITER ;
