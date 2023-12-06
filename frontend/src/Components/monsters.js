@@ -25,7 +25,9 @@ function Monster(props) {
     const [attackId, setAttackId] = useState('');
     const [selectedAttackValue, setSelectedAttackValue] = useState('');
     const [attacks, setAttacks] = useState([]);
+    const [selectedAttackIDsList, setselectedAttackIDsList] = useState([]);
 
+/**  This is meant to either pre-fill the form or leave each item blank
     useEffect(() => {
         fetch(`../src/backend/get_monster_route?MonsterID=${props.MonsterID}`)
         .then(response => response.json())
@@ -64,7 +66,7 @@ function Monster(props) {
             setStatId('');
         });
     }, [props.MonsterID]);
-
+*/
     //Get all attacks
     useEffect(() => {
         // Fetch data from your API
@@ -95,7 +97,7 @@ function Monster(props) {
 
         const monsterAttackData = {
             MonsterAttackID: monsterAttackId,
-            AttackID: attackId,
+            attackIDs : selectedAttackIDsList,
             MonsterID: props.MonsterID,
         };
 
