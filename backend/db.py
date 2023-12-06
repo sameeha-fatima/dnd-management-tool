@@ -48,33 +48,33 @@ def create_user(first_name, last_name, username, password):
     #hash the password
     hash_object.update(password.encode())
     hash_password = hash_object.hexdigest()
-    cursor.execute('INSERT INTO User(FirstName, LastName, Username, Password) VALUES (%s, %s, %s, %s)', (first_name, last_name, username, hash_password))
+    cursor.execute('INSERT INTO User (FirstName, LastName, Username, Password) VALUES (%s, %s, %s, %s)', (first_name, last_name, username, hash_password))
     connection.commit()
     cursor.close()
     connection.close()
     
-def get_user(user_id):
-    connection = getConnection()
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM User WHERE UserID = %s', (user_id,))
-    user = cursor.fetchone()
-    cursor.close()
-    connection.close()
+# def get_user(user_id):
+#     connection = getConnection()
+#     cursor = connection.cursor(dictionary=True)
+#     cursor.execute('SELECT * FROM User WHERE UserID = %s', (user_id,))
+#     user = cursor.fetchone()
+#     cursor.close()
+#     connection.close()
 
-    if user:
-        return User(**user)
-    else:
-        return None
+#     if user:
+#         return User(**user)
+#     else:
+#         return None
 
-def get_all_users():
-    connection = getConnection()
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM User')
-    users_records = cursor.fetchall()
-    users = [User(**record) for record in users_records]
-    cursor.close()
-    connection.close()
-    return users
+# def get_all_users():
+#     connection = getConnection()
+#     cursor = connection.cursor(dictionary=True)
+#     cursor.execute('SELECT * FROM User')
+#     users_records = cursor.fetchall()
+#     users = [User(**record) for record in users_records]
+#     cursor.close()
+#     connection.close()
+#     return users
 
 def delete_user(user_id):
     connection = getConnection()
@@ -103,10 +103,10 @@ def delete_session(session_id):
     cursor.close()
     connection.close()
 
-def get_all_sessions():
+def get_all_sessions(user_id):
     connection = getConnection()
     cursor = connection.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM Session')
+    cursor.execute('SELECT * FROM Session WHERE User = "%s"', (user_id))
     session_records = cursor.fetchall()
     session = [Session(**record) for record in session_records]
     cursor.close()
@@ -153,6 +153,19 @@ def get_all_towns():
     connection.close()
     return town
 
+def get_town_characters(town_id):
+    connection = getConnection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM CharacterTown WHERE TownID = %s', (town_id))
+    characters_town = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    if characters_town:
+        return [Character(**get_character(record.character_id)) for record in characters_town]
+    else:
+        return None
+
 #####################
 # STAT FUNCTIONS
 #####################
@@ -161,8 +174,11 @@ def create_stat(strength, dexterity, constitution, intelligence, wisdom, charism
     cursor = connection.cursor()
     cursor.execute('INSERT INTO Stat (Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma) VALUES (%s, %s, %s, %s, %s, %s)', (strength, dexterity, constitution, intelligence, wisdom, charisma))
     connection.commit()
+    cursor.execute('SELECT LAST_INSERT_ID()')
+    stat_id = cursor.fetchone()
     cursor.close()
     connection.close()
+    return stat_id
 
 def update_stat(stat_id, strength, dexterity, constitution, intelligence, wisdom, charisma):
     if stat_id:
@@ -205,8 +221,11 @@ def create_character(character_name, job, race, session_id, stat_id):
     cursor = connection.cursor()
     cursor.execute('INSERT INTO Character (CharacterName, Job, Race, SessionID, StatID) VALUES (%s, %s, %s, %s, %s)', (character_name, job, race, session_id, stat_id))
     connection.commit()
+    cursor.execute('SELECT LAST_INSERT_ID()')
+    character_id = cursor.fetchone()
     cursor.close()
     connection.close()
+    return character_id
 
 def update_character(character_id, character_name, job, race, session_id, stat_id):
     if (character_id is not None and character_id != ''):
@@ -241,6 +260,14 @@ def get_all_characters():
     connection.close()
     return character
 
+def delete_character(character_id):
+    connection = getConnection()
+    cursor = connection.cursor()
+    cursor.execute('DELETE FROM Character WHERE CharacterID = "%s"', (character_id))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
 def create_character_town(town_id, character_id):
     connection = getConnection()
     cursor = connection.cursor()
@@ -248,19 +275,6 @@ def create_character_town(town_id, character_id):
     connection.commit()
     cursor.close()
     connection.close()
-
-def get_character_town(character_town_id):
-    connection = getConnection()
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM CharacterTown WHERE CharacterTownID = %s', (character_town_id,))
-    character_town = cursor.fetchone()
-    cursor.close()
-    connection.close()
-
-    if character_town:
-        return CharacterTown(**character_town)
-    else:
-        return None
 
 #####################
 # MONSTER FUNCTIONS
@@ -270,8 +284,11 @@ def create_monster(monster_name, session_id, stat_id):
     cursor = connection.cursor()
     cursor.execute('INSERT INTO Character (MonsterName, SessionID, StatID) VALUES (%s, %s, %s)', (monster_name, session_id, stat_id))
     connection.commit()
+    cursor.execute('SELECT LAST_INSERT_ID()')
+    monster_id = cursor.fetchone()
     cursor.close()
     connection.close()
+    return monster_id
 
 def delete_monster(monster_id):
     connection = getConnection()
@@ -284,12 +301,12 @@ def delete_monster(monster_id):
 def get_monster(monster_id):
     cursor = connection.cursor(dictionary=True)
     cursor.execute('SELECT * FROM Monster WHERE MonsterID = %s', (monster_id,))
-    monster_town = cursor.fetchone()
+    monster = cursor.fetchone()
     cursor.close()
     connection.close()
 
-    if monster_town:
-        return Monster(**monster_town)
+    if monster:
+        return Monster(**monster)
     else:
         return None
 
@@ -305,13 +322,28 @@ def get_all_monsters():
 #####################
 # PLAYER FUNCTIONS
 #####################
+def get_player(player_id):
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM Player WHERE PlayerID = %s', (player_id))
+    player = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+    if player:
+        return Player(**player)
+    else:
+        return None
+
 def create_player(_class, alignment, character_id):
     connection = getConnection()
     cursor = connection.cursor()
     cursor.execute('INSERT INTO Player (Class, Alignment, CharacterID) VALUES (%s, %s, %s)', (_class, alignment, character_id))
     connection.commit()
+    cursor.execute('SELECT LAST_INSERT_ID()')
+    player_id = cursor.fetchone()
     cursor.close()
     connection.close()
+    return player_id
 
 def update_player(player_id, _class, alignment, character_id):
     if player_id:
@@ -333,6 +365,14 @@ def get_all_players():
     cursor.close()
     connection.close()
     return player
+
+def delete_player(player_id):
+    connection = getConnection()
+    cursor = connection.cursor()
+    cursor.execute('DELETE FROM Player WHERE PlayerID = "%s"', (player_id))
+    connection.commit()
+    cursor.close()
+    connection.close()
 
 #####################
 # ATTACK FUNCTIONS
@@ -394,9 +434,9 @@ def create_player_attack(attack_id, player_id):
     cursor.close()
     connection.close()
 
-def get_all_player_attacks():
+def get_all_player_attacks(player_id):
     connection = getConnection()
-    cursor.execute('SELECT * FROM PlayerAttack')
+    cursor.execute('SELECT * FROM PlayerAttack WHERE PlayerID = %s', (player_id))
     player_attack_records = cursor.fetchall()
     player_attack = [PlayerAttack(**record) for record in player_attack_records]
     cursor.close()
@@ -411,11 +451,11 @@ def create_monster_attack(attack_id, monster_id):
     cursor.close()
     connection.close()
 
-def get_all_monster_attacks():
+def get_all_monster_attacks(monster_id):
     connection = getConnection()
-    cursor.execute('SELECT * FROM MonsterAttack')
+    cursor.execute('SELECT * FROM MonsterAttack WHERE MonsterID = %s', (monster_id))
     monster_attack_records = cursor.fetchall()
-    monster_attack = [MonsterAttack(**record) for record in monster_attack_records]
+    monster_attack = [Attack(**get_attack(record.attack_id)) for record in monster_attack_records]
     cursor.close()
     connection.close()
     return monster_attack
