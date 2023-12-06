@@ -206,3 +206,146 @@ BEGIN
     WHERE StatID = stat_id;
 END //
 DELIMETER ;
+
+-- Before deleting a session, delete everything associated with the session
+DELIMETER //
+CREATE TRIGGER BeforeDeletingSession
+BEFORE DELETE ON Session 
+FOR EACH ROW
+BEGIN
+    DECLARE character_id INT;
+    DECLARE char_stat_id INT;
+    DECLARE monster_stat_id INT;
+    DECLARE player_stat_id INT;
+    DECLARE attack_id INT;
+    DECLARE town_id INT;
+    DECLARE player_id INT;
+    DECLARE monster_id INT;
+
+    SELECT TownID INTO town_id
+    FROM Town
+    WHERE TownID = OLD.TownID;
+
+    SELECT MonsterID, StatID
+    INTO monster_id, monster_stat_id
+    FROM Monster
+    WHERE MonsterID = OLD.MonsterID;
+
+    SELECT CharacterID, StatID
+    INTO character_id, char_stat_id
+    FROM Character
+    WHERE CharacterID = OLD.CharacterID;
+
+    SELECT PlayerID, StatID
+    INTO player_id, player_stat_id
+    FROM Player
+    WHERE PlayerID = OLD.PlayerID;
+
+    SELECT AttackID
+    INTO attack_id
+    FROM Attack
+    WHERE AttackID = OLD.AttackID;
+
+    DELETE FROM MonsterAttack
+    WHERE AttackID = attack_id;
+
+    DELETE FROM PlayerAttack
+    WHERE AttackID = attack_id;
+
+    DELETE FROM Attack
+    WHERE AttackID = attack_id;
+
+    DELETE FROM CharacterTown
+    WHERE TownID = town_id;
+
+    DELETE FROM Town
+    WHERE TownID = town_id;
+
+    DELETE FROM Character
+    WHERE CharacterID = character_id;
+
+    DELETE FROM Stat
+    WHERE StatID = char_stat_id;
+
+    DELETE FROM Monster
+    WHERE MonsterID = monster_id;
+
+    DELETE FROM Stat
+    WHERE StatID = monster_stat_id;
+
+    DELETE FROM Player
+    WHERE PlayerID = player_id;
+
+    DELETE FROM Stat
+    WHERE StatID = player_stat_id;
+
+END;
+//
+DELIMETER ;
+
+-- Before Deleting Town, delete the character towns
+DELIMETER //
+CREATE TRIGGER BeforeDeletingTown
+BEFORE DELETE ON Town 
+FOR EACH ROW
+BEGIN
+
+    DECLARE town_id INT;
+
+    SELECT TownID INTO town_id
+    FROM Town
+    WHERE TownID = OLD.TownID;
+
+    DELETE FROM CharacterTown
+    WHERE TownID = town_id;
+
+END;
+//
+DELIMETER ;
+
+--Before deleting monsters, delete everything tied to the monster
+DELIMETER //
+CREATE TRIGGER BeforeDeletingMonster
+BEFORE DELETE ON Monster 
+FOR EACH ROW
+BEGIN
+    DECLARE monster_id INT;
+    DECLARE stat_id INT;
+    DECLARE monster_attack_id INT;
+
+    SELECT MonsterID, StatID
+    INTO monster_id, stat_id
+    FROM Monster
+    WHERE MonsterID = OLD.MonsterID;
+
+    DELETE FROM MonsterAttack
+    WHERE AttackID = (SELECT AttackID FROM MonsterAttack WHERE MonsterID = monster_id);
+
+    DELETE FROM Stat
+    WHERE StatID = stat_id;
+END;
+//
+DELIMETER ;
+
+--Before deleting an attack, remove related player/monster attacks
+DELIMETER //
+CREATE TRIGGER BeforeDeletingAttack
+BEFORE DELETE ON Attack 
+FOR EACH ROW
+BEGIN
+    DECLARE attack_id INT;
+
+    SELECT AttackID
+    INTO attack_id
+    FROM Attack
+    WHERE AttackID = OLD.AttackID;
+
+    DELETE FROM MonsterAttack
+    WHERE AttackID = attack_id;
+
+    DELETE FROM PlayerAttack
+    WHERE AttackID = attack_id;
+
+END;
+//
+DELIMETER ;
