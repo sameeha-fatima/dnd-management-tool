@@ -100,7 +100,7 @@ function Login(props) {
             username: state.username,
             password: state.password,
         };
-        
+
         fetch('/login', {
             method: 'POST',
             headers: {

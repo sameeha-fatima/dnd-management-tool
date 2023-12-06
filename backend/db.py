@@ -177,6 +177,19 @@ def get_town_characters(town_id):
     else:
         return None
 
+def get_town_characters(town_id):
+    connection = getConnection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM CharacterTown WHERE TownID = %s', (town_id))
+    characters_town = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    if characters_town:
+        return [Character(**get_character(record.character_id)) for record in characters_town]
+    else:
+        return None
+
 #####################
 # STAT FUNCTIONS
 #####################
