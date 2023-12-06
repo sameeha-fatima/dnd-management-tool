@@ -228,6 +228,12 @@ def get_attack_route(attack_id):
         return jsonify(vars(attack))
     else:
         return jsonify({'error': 'Attack not found'}, 404)
+    
+# returns all attacks
+@app.route('/attacks', methods=['GET'])
+def get_all_attacks_route():
+    attacks = get_all_attacks()
+    return jsonify(attacks)
 
 @app.route('/attack/<int:attack_id>', methods=['DELETE'])
 def delete_attack_route():
