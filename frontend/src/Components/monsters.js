@@ -10,10 +10,9 @@ const GridContainer = styled.div`
     border: solid;
 `;
 
-function Character(props) {
+    
+function Monster(props) {
     const [name, setName] = useState('');
-    const [race, setRace] = useState('');
-    const [job, setJob] = useState('');
     const [sessionId, setSessionId] = useState('');
     const [statId, setStatId] = useState('');
     const [strength, setStrength] = useState('');
@@ -22,14 +21,18 @@ function Character(props) {
     const [intelligence, setIntelligence] = useState('');
     const [wisdom, setWisdom] = useState('');
     const [charisma, setCharisma] = useState('');
+    const [monsterAttackId, setMonsterAttackId] = useState('');
+    const [attackId, setAttackId] = useState('');
+    const [selectedAttackValue, setSelectedAttackValue] = useState('');
+    const [allAttacks, setAttacks] = useState([]);
+    const [selectedAttackIDsList, setselectedAttackIDsList] = useState([]);
 
+/**  This is meant to either pre-fill the form or leave each item blank
     useEffect(() => {
-        fetch(`../src/backend/get_character_route?CharacterID=${props.CharacterID}`)
+        fetch(`../src/backend/get_monster_route?MonsterID=${props.MonsterID}`)
         .then(response => response.json())
         .then(data => {
-            setName(data.CharacterName || '');
-            setRace(data.Race || '');
-            setJob(data.Job || '');
+            setName(data.MonsterName || '');
             setSessionId(data.sessionId || '');
             setStatId(data.StatID || '');
 
@@ -52,23 +55,32 @@ function Character(props) {
                     setWisdom('');
                     setCharisma('');
                 });
+
+                //get this monster's attacks
+                
         })
         .catch(error => {
-            // if there is no character data, leave it blank
+            // if there is no Monster data, leave it blank
             setName('');
-            setRace('');
-            setJob('');
             setSessionId('');
             setStatId('');
         });
-    }, [props.CharacterID]);
+    }, [props.MonsterID]);
+*/
+    //Get all attacks
+    useEffect(() => {
+        // Fetch data from your API
+        fetch("/attacks")
+          .then(response => response.json())
+          .then(allAttacks => setAttacks(allAttacks))
+          .catch(error => console.error('Error fetching attack data:', error));
+      }, []); 
+    
 
     const submitForm = () => {
         const requestData = {
-            CharacterID: props.CharacterID,
-            CharacterName: name,
-            Race: race,
-            Job: job,
+            MonsterID: props.MonsterID,
+            MonsterName: name,
             SessionID: sessionId,
             StatID: statId,
         };
@@ -83,6 +95,37 @@ function Character(props) {
             Charisma: charisma,
         };
 
+        const monsterAttackData = {
+            MonsterAttackID: monsterAttackId,
+            attackIDs : selectedAttackIDsList,
+            MonsterID: props.MonsterID,
+        };
+
+        const dataToSend = {
+            strength: strength,
+            dexterity: dexterity,
+            constitution: constitution,
+            intelligence: intelligence,
+            wisdom: wisdom,
+            charisma: charisma,
+            monster_name: name,
+            session_id: sessionId,
+            attacks : selectedAttackIDsList,
+        };
+
+        //create the monster object
+        fetch("/monster", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataToSend),
+        })
+        .catch(error => {
+            console.error('Error: ', error)
+        })
+/** 
+        //update stats
         fetch('../src/backend/update_stat', {
             method: 'PUT',
             headers: {
@@ -92,8 +135,8 @@ function Character(props) {
         })
         .then(response => {
             if (response.ok) {
-                //Update character
-                fetch('../src/backend/update_character', {
+                //Update Monster
+                fetch('../src/backend/update_monster', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -102,7 +145,7 @@ function Character(props) {
                 })
                 .then(response => {
                     if (response.ok) {
-                        console.log('Character updated')
+                        console.log('Monster updated')
                     } else {
                         console.error('Error: ', response.statusText)
                     }
@@ -117,18 +160,24 @@ function Character(props) {
         .catch(error => {
             console.error('Error: ', error)
         })
+*/
+/** 
+        //update attacks
+        fetch('../src/backend/update_monster_attacks', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(monsterAttackData),
+        })
+        .catch(error => {
+            console.error('Error: ', error)
+        })
+*/
     }
 
 const changeName = (event) => {
     setName(event.target.value);
-};
-
-const changeRace = (event) => {
-    setRace(event.target.value);
-};
-
-const changeJob = (event) => {
-    setJob(event.target.value);
 };
 
 const changeStrength = (event) => {
@@ -155,16 +204,50 @@ const changeCharisma = (event) => {
     setCharisma(event.target.value);
 };
 
+const changeAttack = (event) => {
+    setSelectedAttackValue(event.target.value);
+};
+
+const handleAttackSelection = (event) => {
+    const selectedValue = event.target.id; //use id instead of value to look at attackID
+
+    //update which attack is currently selected
+    setSelectedAttackValue(selectedValue);
+
+    //if the newly selected item is not on the list, add it
+    if (selectedValue && !selectedAttackIDsList.includes(selectedValue)) {
+        setselectedAttackIDsList([...selectedAttackIDsList, selectedValue]);
+    }
+};
+
     return (
         <GridContainer>
             <div>
-                <h1>Character</h1>
+                <Title>Monster</Title>
                     <label htmlFor="name">Name: </label>
                     <input type="text" id="name" value={name} onChange={changeName}/>
-                    <label htmlFor="race">Race: </label>
-                    <input type="text" id="race" value={race} onChange={changeRace}/>
-                    <label htmlFor='job'>Job: </label>
-                    <input type="text" id="job" value={job} onChange={changeJob}/>
+                    <label htmlFor="attack">Attacks: </label>
+
+                    <label>Select an attack:</label>
+                    <select value={selectedAttackValue} onChange={handleAttackSelection}>
+                        <option value="">Select...</option>
+                        {allAttacks.map(item => (
+                        <option key={item.id} value={item.value}>
+                            {item.label}
+                        </option>
+                        ))}
+                    </select>
+
+                    <p>Selected Attack: {selectedAttackValue}</p>
+
+                    <div>
+                        <h2>Selected Attacks:</h2>
+                        <ul>
+                            {selectedAttackIDsList.map((item, index) => (
+                                <li key={index}>{item}</li>
+                            ))}
+                        </ul>
+                    </div>
 
                     <label htmlFor="strength">Strength: </label>
                     <input type="text" id="strength" value={strength} onChange={changeStrength}/>
@@ -185,4 +268,6 @@ const changeCharisma = (event) => {
     );
 }
 
-export default Character;
+export default Monster;
+
+
