@@ -24,7 +24,7 @@ function Monster(props) {
     const [monsterAttackId, setMonsterAttackId] = useState('');
     const [attackId, setAttackId] = useState('');
     const [selectedAttackValue, setSelectedAttackValue] = useState('');
-    const [attacks, setAttacks] = useState([]);
+    const [allAttacks, setAttacks] = useState([]);
     const [selectedAttackIDsList, setselectedAttackIDsList] = useState([]);
 
 /**  This is meant to either pre-fill the form or leave each item blank
@@ -70,9 +70,9 @@ function Monster(props) {
     //Get all attacks
     useEffect(() => {
         // Fetch data from your API
-        fetch(`../src/backend/get_all_attacks_route`)
+        fetch("/attacks")
           .then(response => response.json())
-          .then(attacks => setAttacks(attacks))
+          .then(allAttacks => setAttacks(allAttacks))
           .catch(error => console.error('Error fetching attack data:', error));
       }, []); // Empty dependency array to ensure the effect runs only once when the component mounts
     
@@ -99,6 +99,18 @@ function Monster(props) {
             MonsterAttackID: monsterAttackId,
             attackIDs : selectedAttackIDsList,
             MonsterID: props.MonsterID,
+        };
+
+        const dataToSend = {
+            Strength: strength,
+            Dexterity: dexterity,
+            Constitution: constitution,
+            Intelligence: intelligence,
+            Wisdom: wisdom,
+            Charisma: charisma,
+            MonsterName: name,
+            SessionID: sessionId,
+            attacks : selectedAttackIDsList,
         };
 
         //update stats
@@ -136,7 +148,7 @@ function Monster(props) {
         .catch(error => {
             console.error('Error: ', error)
         })
-
+/** 
         //update attacks
         fetch('../src/backend/update_monster_attacks', {
             method: 'PUT',
@@ -148,6 +160,7 @@ function Monster(props) {
         .catch(error => {
             console.error('Error: ', error)
         })
+*/
     }
 
 const changeName = (event) => {
@@ -182,6 +195,18 @@ const changeAttack = (event) => {
     setSelectedAttackValue(event.target.value);
 };
 
+const handleAttackSelection = (event) => {
+    const selectedValue = event.target.id; //use id instead of value to look at attackID
+
+    //update which attack is currently selected
+    setSelectedAttackValue(selectedValue);
+
+    //if the newly selected item is not on the list, add it
+    if (selectedValue && !selectedAttackIDsList.includes(selectedValue)) {
+        setselectedAttackIDsList([...selectedAttackIDsList, selectedValue]);
+    }
+};
+
     return (
         <GridContainer>
             <div>
@@ -191,9 +216,9 @@ const changeAttack = (event) => {
                     <label htmlFor="attack">Attacks: </label>
 
                     <label>Select an attack:</label>
-                    <select value={selectedAttackValue} onChange={changeAttack}>
+                    <select value={selectedAttackValue} onChange={handleAttackSelection}>
                         <option value="">Select...</option>
-                        {attacks.map(item => (
+                        {allAttacks.map(item => (
                         <option key={item.id} value={item.value}>
                             {item.label}
                         </option>
@@ -201,6 +226,15 @@ const changeAttack = (event) => {
                     </select>
 
                     <p>Selected Attack: {selectedAttackValue}</p>
+
+                    <div>
+                        <h2>Selected Items:</h2>
+                        <ul>
+                            {selectedAttackIDsList.map((item, index) => (
+                                <li key={index}>{item}</li>
+                            ))}
+                        </ul>
+                    </div>
 
                     <label htmlFor="strength">Strength: </label>
                     <input type="text" id="strength" value={strength} onChange={changeStrength}/>
