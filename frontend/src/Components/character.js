@@ -74,7 +74,7 @@ function Character(props) {
         };
 
         const statData = {
-            StatID: statID,
+            StatID: statId,
             Strength: strength,
             Dexterity: dexterity,
             Constitution: constitution,
