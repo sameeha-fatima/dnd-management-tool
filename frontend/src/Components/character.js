@@ -158,7 +158,7 @@ const changeCharisma = (event) => {
     return (
         <GridContainer>
             <div>
-                <Title>Character</Title>
+                <h1>Character</h1>
                     <label htmlFor="name">Name: </label>
                     <input type="text" id="name" value={name} onChange={changeName}/>
                     <label htmlFor="race">Race: </label>

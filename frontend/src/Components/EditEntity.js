@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AttackControl from "./AttackControl";
 import Character from "./character";
+import styled from 'styled-components';
 
 const GridContainer = styled.div`
     height: 100px;
@@ -50,9 +51,9 @@ function EditEntity(props) {
     // else if(type == "Monster") {
     //     editScreen = <MonsterControl />;
     // }
-    // else if(type == "Town") {
-    //     editScreen = <TownControl />;
-    // }
+    else if(type == "Town") {
+        editScreen = <TownControl />;
+    }
     // else if(type == "Player") {
     //     editScreen = <PlayerControl />;
     // }
@@ -65,7 +66,7 @@ function EditEntity(props) {
     return(
         <GridContainer>
             <HomeButton onClick={() => navigation("/sessionControl")}>Home</HomeButton><div></div>
-            <Title>{ props.entity.type }</Title>
+            <Title>Monster</Title>
             {editScreen}
             <RemoveButton onClick={removeEntity}>Remove</RemoveButton>
         </GridContainer>
