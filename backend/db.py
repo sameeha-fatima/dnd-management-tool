@@ -23,10 +23,10 @@ def getConnection():
 def login(username, password):
     connection = getConnection()
     cursor = connection.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM User WHERE Username = %s', (username))
+    cursor.execute('SELECT * FROM dnd_tool.user WHERE Username = %s;', (username,))
     user = cursor.fetchone()
     #unpack the user tuple
-    (user_id, first_name, last_name, user_name, encrypted_password) = user
+    [user_id, first_name, last_name, user_name, encrypted_password] = user.values()
     hash_object = hashlib.sha256()
     # hash the input password
     hash_object.update(password.encode())
@@ -36,7 +36,7 @@ def login(username, password):
     #check if the input password matches the saved password
     if hash_password == encrypted_password:
         #return user with userID if correct login
-        return User(**user)
+        return User(user['UserID'], user['FirstName'], user['LastName'], user['Username'], user['Password'])
     else:
         #return None or an error b/c didn't sign in correctly
         return None

@@ -113,6 +113,7 @@ function Login(props) {
         .catch(error => {
             console.error('Error: ', error)
         })
+        console.log(state.user)
         if (state.user != '') {
             () => navigation("/sessionControl", {userId: user.userId})
         } else {
