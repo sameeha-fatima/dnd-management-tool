@@ -144,7 +144,7 @@ END;
 //
 DELIMITER ;
 
---Check if session name already exists, if it does, do not create session
+-- Check if session name already exists, if it does, do not create session
 DELIMITER //
 CREATE PROCEDURE CreateSession(
     IN _session_id INT,
@@ -303,7 +303,7 @@ END;
 //
 DELIMITER ;
 
---Before deleting monsters, delete everything tied to the monster
+-- Before deleting monsters, delete everything tied to the monster
 DELIMITER //
 CREATE TRIGGER BeforeDeletingMonster
 BEFORE DELETE ON Monster 
@@ -327,7 +327,7 @@ END;
 //
 DELIMITER ;
 
---Before deleting an attack, remove related player/monster attacks
+-- Before deleting an attack, remove related player/monster attacks
 DELIMITER //
 CREATE TRIGGER BeforeDeletingAttack
 BEFORE DELETE ON Attack 
