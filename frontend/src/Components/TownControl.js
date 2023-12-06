@@ -26,6 +26,18 @@ const Select = styled.select`
     }
 `;
 
+const Button = styled.button`
+    color: white;
+    background-color: blue;
+    text-align: center;
+    margin: 10px 5px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: medium;
+`;
+
 const nameFormat = {
     name: "",
 }
@@ -45,22 +57,32 @@ function TownControl(props) {
     const navigation = useNavigate();
     const [state, dispatch] = useReducer(reducer, nameFormat);
     const [town, setTown] = useState('');
-    const [character, setCharacter] = useState('');
     const formRef = useRef();
-
-    const handleChange = (e) => {
-        setCharacter(e.target.value);
-    };
 
     //Api call to get town object given id
     //if town exists use it to fill in values. if it doesn't exist (creating new town)
     //use placeholders
 
-    let charList;
-    if (town != '') {
-        charList = town.characters.map(character =>
-            <option value={character.character_name}>{character.character_name}</option>
-        );
+    const requestData = {
+        name: state.name,
+        sessionId: props.sessionId,
+    };
+
+    const addTown = () => {
+
+        fetch('../src/backen/session_all/{props.user_id}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData),
+        })
+        .then(response => response.json())
+        .then(data => setTown(data))
+        .catch(error => {
+            console.error('Error: ', error)
+        });
+        () => navigation("/session/:sessionId");
     }
 
     return(
@@ -69,12 +91,8 @@ function TownControl(props) {
             <form ref={formRef}>
                 <Label for="town name">Name</Label><br></br>
                 <input id="town name" type='text' placeholder="Name" value={state.name} onChange={(event) => dispatch({ type: 'set_name', payload: event.target.value })}>{state.town.town_name}</input>
+                <Button type="submit" onClick={addTown}>Add</Button>
             </form>
-            <label for="CharacterTypeSelect">Search</label>
-                    <Select name="CharacterType" id="CharacterTypeSelect" onChange={handleChange}>
-                        <option disabled selected value> -- select an option -- </option>
-                        {charList}
-                    </Select>
         </GridContainer>
     )
 }
