@@ -54,9 +54,9 @@ function EditEntity(props) {
     else if(type == "Town") {
         editScreen = <TownControl />;
     }
-    // else if(type == "Player") {
-    //     editScreen = <PlayerControl />;
-    // }
+    else if(type == "Player") {
+        editScreen = <PlayerControl />;
+    }
 
     const removeEntity = () => {
         //api call to remove entity

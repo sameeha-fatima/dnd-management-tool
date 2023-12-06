@@ -88,12 +88,18 @@ function SessionControl(props) {
     const [session, setSession] = useState('');
     const formRef = useRef();
 
-    fetch('../src/backend/get_all_sessions_route')
+    fetch('../src/backen/session_all/{props.user_id}', {
+        method: "GET"
+    })
     .then(response => response.json())
     .then(data => setSessionList(data))
     .catch(error => {
         console.error('Error: ', error)
-    })
+    });
+
+    const handleChange = (e) => {
+        setSession(e.target.key);
+    };
 
     return(
         <GridContainer>
@@ -111,11 +117,13 @@ function SessionControl(props) {
                 <ESTitle>Existing Session</ESTitle>
                 <form action="/action_page.php">
                     <br></br>
-                    <select name="EntityType" id="EntityTypeSelect">
+                    <select name="EntityType" id="EntityTypeSelect" onChange={handleChange}>
                         <option disabled selected value> -- select an option -- </option>
-                        
+                        {state.sessionList.map(session =>
+                            <option key={session.session_id} value={session.session_name}></option>
+                        )}
                     </select>
-                    <Button type="submit">Enter Session</Button>
+                    <Button type="submit" onClick={() => navigation("/session/:{session}", {session_id: session})}>Enter Session</Button>
                 </form>
             </ESBackground>
         </GridContainer>
