@@ -1,0 +1,32 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "proxy": "http://localhost:5000",
+  "description": "Frontend for DND Management Tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "react-scripts start"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.1",
+    "react-scripts": "^5.0.1",
+    "styled-components": "^6.1.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
