@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import AttackControl from "./AttackControl";
 import Character from "./character";
+import TownControl from "./TownControl";
+import Player from "./player";
+import Monster from "./monsters"
 import styled from 'styled-components';
 
 const GridContainer = styled.div`
@@ -54,13 +57,13 @@ function AddEntity(props) {
         editScreen = <AttackControl />;
     }
     else if(type == "Monster") {
-        editScreen = <MonsterControl />;
+        editScreen = <Monster />;
     }
     else if(type == "Town") {
         editScreen = <TownControl />;
     }
     else if(type == "Player") {
-        editScreen = <PlayerControl />;
+        editScreen = <Player />;
     }
 
     return(

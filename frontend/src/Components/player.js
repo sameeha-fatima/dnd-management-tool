@@ -197,7 +197,7 @@ function Player(props) {
     return (
         <GridContainer>
             <div>
-                <Title>Player</Title>
+                <h1>Player</h1>
                 <label htmlFor="playerName">Player: {props.PlayerID}</label>
                 <label htmlFor="race">Race: </label>
                 <input type="text" id="race" value={race} onChange={changeRace}/>
