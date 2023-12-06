@@ -98,7 +98,21 @@ function CreateAccount(props) {
             return;
         }
 
-        //do api call. If valid credentials, log user in and redirect to homepage. else, show message that username already exists
+        fetch("/user", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                first_name: state.firstName,
+                last_name: state.lastName,
+                username: state.username,
+                password: state.password
+            })
+        })
+            .then((res) => res.text())
+            .then((res) => {
+                console.log(res)
+            });
+
     }
 
     return (
