@@ -160,7 +160,7 @@ BEGIN
 
     IF _duplicate_name THEN
         SET _result = 0;
-    ELSE:
+    ELSE
         SET _result = 1;
     END IF;
 END; 
@@ -179,17 +179,17 @@ BEGIN
 
     SELECT CharacterID, StatID
     INTO character_id, stat_id
-    FROM Character
+    FROM `Character`
     WHERE PlayerID = OLD.PlayerID;
 
     DELETE FROM PlayerAttack
-    WHERE AttackID = (SELECT AttackID FROM PlayerAttack WHERE PlayerID = player_id)
+    WHERE AttackID = (SELECT AttackID FROM PlayerAttack WHERE PlayerID = player_id);
 
-    DELETE FROM Character
-    WHERE CharacterID = character_id
+    DELETE FROM `Character`
+    WHERE CharacterID = character_id;
 
     DELETE FROM Stat
-    WHERE StatID = stat_id
+    WHERE StatID = stat_id;
 END;
 //
 DELIMITER ;
@@ -197,7 +197,7 @@ DELIMITER ;
 -- Before deleting a character, delete the rows that are associated with character
 DELIMITER //
 CREATE TRIGGER BeforeDeletingCharacter
-BEFORE DELETE ON Character FOR EACH ROW
+BEFORE DELETE ON `Character` FOR EACH ROW
 BEGIN
     DECLARE stat_id INT;
 
@@ -228,28 +228,23 @@ BEGIN
     DECLARE monster_id INT;
 
     SELECT TownID INTO town_id
-    FROM Town
-    WHERE TownID = OLD.TownID;
+    FROM Town;
 
     SELECT MonsterID, StatID
     INTO monster_id, monster_stat_id
-    FROM Monster
-    WHERE MonsterID = OLD.MonsterID;
+    FROM Monster;
 
     SELECT CharacterID, StatID
     INTO character_id, char_stat_id
-    FROM Character
-    WHERE CharacterID = OLD.CharacterID;
+    FROM `Character`;
 
     SELECT PlayerID, StatID
     INTO player_id, player_stat_id
-    FROM Player
-    WHERE PlayerID = OLD.PlayerID;
+    FROM Player;
 
     SELECT AttackID
     INTO attack_id
-    FROM Attack
-    WHERE AttackID = OLD.AttackID;
+    FROM Attack;
 
     DELETE FROM MonsterAttack
     WHERE AttackID = attack_id;
@@ -266,7 +261,7 @@ BEGIN
     DELETE FROM Town
     WHERE TownID = town_id;
 
-    DELETE FROM Character
+    DELETE FROM `Character`
     WHERE CharacterID = character_id;
 
     DELETE FROM Stat
