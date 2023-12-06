@@ -53,15 +53,15 @@ function AddEntity(props) {
     } else if(type == "Attack") {
         editScreen = <AttackControl />;
     }
-    // else if(type == "Monster") {
-    //     editScreen = <MonsterControl />;
-    // }
+    else if(type == "Monster") {
+        editScreen = <MonsterControl />;
+    }
     else if(type == "Town") {
         editScreen = <TownControl />;
     }
-    // else if(type == "Player") {
-    //     editScreen = <PlayerControl />;
-    // }
+    else if(type == "Player") {
+        editScreen = <PlayerControl />;
+    }
 
     return(
         <div>
