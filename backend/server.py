@@ -61,18 +61,23 @@ def delete_user_route():
 
 # returns all sessions owned by user
 @app.route('/session_all/<int:user_id>', methods=['GET'])
-def get_all_sessions_route():
+def get_all_sessions_route(user_id):
     sessions = get_all_sessions(user_id)
     return jsonify(sessions)
 
 # return specific session info
 @app.route('/session/<int:session_id>', methods=['GET'])
-def get_session_route():
-    session = get_session(session_id)
+def get_session_route(session_id):
+    town = get_all_towns(session_id)
+    player = get_all_players(session_id)
+    character = get_all_characters(session_id)
+    monster = get_all_monsters(session_id)
+    attack = get_all_attacks(session_id)
+
     if session:
-        return jsonify(vars(session))
+        return jsonify(vars(town)+vars(player)+vars(character)+vars(monster)+vars(attack))
     else:
-        return jsonify({'error': 'Session not found'}), 404
+        return jsonify({'error': 'Session not found'}, 404)
 
 @app.route('/session', methods=['POST'])
 def create_session_route():
@@ -167,7 +172,7 @@ def delete_town_route():
 # MONSTER FUNCTIONS
 #####################
 @app.route('/monster', methods=['POST'])
-def get_monster_route():
+def create_monster_route():
     data = request.get_json()
 
     strength = data.get('strength')
@@ -241,7 +246,7 @@ def delete_attack_route():
 # PLAYER FUNCTIONS
 #####################
 @app.route('/player', methods=['POST'])
-def get_player_route():
+def create_player_route():
     data = request.get_json()
 
     strength = data.get('strength')
