@@ -74,7 +74,7 @@ function Monster(props) {
           .then(response => response.json())
           .then(allAttacks => setAttacks(allAttacks))
           .catch(error => console.error('Error fetching attack data:', error));
-      }, []); // Empty dependency array to ensure the effect runs only once when the component mounts
+      }, []); 
     
 
     const submitForm = () => {
@@ -102,17 +102,29 @@ function Monster(props) {
         };
 
         const dataToSend = {
-            Strength: strength,
-            Dexterity: dexterity,
-            Constitution: constitution,
-            Intelligence: intelligence,
-            Wisdom: wisdom,
-            Charisma: charisma,
-            MonsterName: name,
-            SessionID: sessionId,
+            strength: strength,
+            dexterity: dexterity,
+            constitution: constitution,
+            intelligence: intelligence,
+            wisdom: wisdom,
+            charisma: charisma,
+            monster_name: name,
+            session_id: sessionId,
             attacks : selectedAttackIDsList,
         };
 
+        //create the monster object
+        fetch("/monster", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataToSend),
+        })
+        .catch(error => {
+            console.error('Error: ', error)
+        })
+/** 
         //update stats
         fetch('../src/backend/update_stat', {
             method: 'PUT',
@@ -148,6 +160,7 @@ function Monster(props) {
         .catch(error => {
             console.error('Error: ', error)
         })
+*/
 /** 
         //update attacks
         fetch('../src/backend/update_monster_attacks', {
@@ -228,7 +241,7 @@ const handleAttackSelection = (event) => {
                     <p>Selected Attack: {selectedAttackValue}</p>
 
                     <div>
-                        <h2>Selected Items:</h2>
+                        <h2>Selected Attacks:</h2>
                         <ul>
                             {selectedAttackIDsList.map((item, index) => (
                                 <li key={index}>{item}</li>
