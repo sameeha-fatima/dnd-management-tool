@@ -144,9 +144,9 @@ def delete_town(town_id):
     cursor.close()
     connection.close()
 
-def get_all_towns():
+def get_all_towns(session_id):
     connection = getConnection()
-    cursor.execute('SELECT * FROM Town')
+    cursor.execute('SELECT * FROM Town WHERE SessionID ="%s"', (session_id))
     town_records = cursor.fetchall()
     town = [Town(**record) for record in town_records]
     cursor.close()
@@ -251,9 +251,9 @@ def get_character(character_id):
     else:
         return None
 
-def get_all_characters():
+def get_all_characters(session_id):
     connection = getConnection()
-    cursor.execute('SELECT * FROM Character')
+    cursor.execute('SELECT * FROM Character WHERE SessionID ="%s"', (session_id))
     character_records = cursor.fetchall()
     character = [Character(**record) for record in character_records]
     cursor.close()
@@ -310,9 +310,9 @@ def get_monster(monster_id):
     else:
         return None
 
-def get_all_monsters():
+def get_all_monsters(session_id):
     connection = getConnection()
-    cursor.execute('SELECT * FROM Monster')
+    cursor.execute('SELECT * FROM Monster WHERE SessionID ="%s"', (session_id))
     monster_records = cursor.fetchall()
     monster = [Monster(**record) for record in monster_records]
     cursor.close()
@@ -357,9 +357,9 @@ def update_player(player_id, _class, alignment, character_id):
     else:
         create_player( _class, alignment, character_id)
 
-def get_all_players():
+def get_all_players(session_id):
     connection = getConnection()
-    cursor.execute('SELECT * FROM Player')
+    cursor.execute('SELECT * FROM Player WHERE SessionID ="%s"', (session_id))
     player_records = cursor.fetchall()
     player = [Player(**record) for record in player_records]
     cursor.close()
@@ -417,9 +417,9 @@ def get_attack(attack_id):
     else:
         return None
 
-def get_all_attacks():
+def get_all_attacks(session_id):
     connection = getConnection()
-    cursor.execute('SELECT * FROM Attack')
+    cursor.execute('SELECT * FROM Attack WHERE SessionID ="%s"', (session_id))
     attack_records = cursor.fetchall()
     attack = [Attack(**record) for record in attack_records]
     cursor.close()
