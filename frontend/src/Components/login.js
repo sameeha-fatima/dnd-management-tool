@@ -100,9 +100,9 @@ function Login(props) {
             username: state.username,
             password: state.password,
         };
-        
-        fetch('../src/backend/login_route', {
-            method: 'GET',
+
+        fetch('/login', {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
