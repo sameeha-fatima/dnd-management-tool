@@ -23,10 +23,10 @@ def getConnection():
 def login(username, password):
     connection = getConnection()
     cursor = connection.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM User WHERE Username = %s', (username))
+    cursor.execute('SELECT * FROM dnd_tool.user WHERE Username = %s;', (username,))
     user = cursor.fetchone()
     #unpack the user tuple
-    (user_id, first_name, last_name, user_name, encrypted_password) = user
+    [user_id, first_name, last_name, user_name, encrypted_password] = user.values()
     hash_object = hashlib.sha256()
     # hash the input password
     hash_object.update(password.encode())
@@ -36,7 +36,7 @@ def login(username, password):
     #check if the input password matches the saved password
     if hash_password == encrypted_password:
         #return user with userID if correct login
-        return User(**user)
+        return User(user['UserID'], user['FirstName'], user['LastName'], user['Username'], user['Password'])
     else:
         #return None or an error b/c didn't sign in correctly
         return None
@@ -115,13 +115,16 @@ def get_all_sessions(user_id):
 
 def get_session(session_id):
     connection = getConnection()
-    cursor.execute('SELECT * FROM Session WHERE SessionID = %s', (session_id,))
-    session_id = cursor.fetchone()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM Session WHERE SessionID = %(sessionID)s', {'sessionID': session_id})
+    session = cursor.fetchone()
+
+    newName = session['SessionID']
     cursor.close()
     connection.close()
 
     if session_id:
-        return Session(**session_id_id)
+        return Session(session['SessionID'], session['SessionName'], session['UserID'])
     else:
         return None
 
@@ -146,12 +149,33 @@ def delete_town(town_id):
 
 def get_all_towns(session_id):
     connection = getConnection()
-    cursor.execute('SELECT * FROM Town WHERE SessionID ="%s"', (session_id))
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM Town WHERE SessionID = %(sessionID)s', {'sessionID': session_id})
     town_records = cursor.fetchall()
-    town = [Town(**record) for record in town_records]
+    
+    townList = []
+    
+    for row in town_records:
+        townList.append(
+            Town(row[0], row[1], row[2])
+        )
+    
     cursor.close()
     connection.close()
-    return town
+    return townList
+
+def get_town_characters(town_id):
+    connection = getConnection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM CharacterTown WHERE TownID = %s', (town_id))
+    characters_town = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    if characters_town:
+        return [Character(**get_character(record.character_id)) for record in characters_town]
+    else:
+        return None
 
 def get_town_characters(town_id):
     connection = getConnection()
@@ -312,12 +336,21 @@ def get_monster(monster_id):
 
 def get_all_monsters(session_id):
     connection = getConnection()
-    cursor.execute('SELECT * FROM Monster WHERE SessionID ="%s"', (session_id))
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM Monster WHERE SessionID = %(sessionID)s', {'sessionID': session_id})
     monster_records = cursor.fetchall()
-    monster = [Monster(**record) for record in monster_records]
+    
+    monsterList = []
     cursor.close()
     connection.close()
-    return monster
+    for row in monster_records:
+        # return Town(row[0], row[1], row[2])
+        monsterList.append(
+            Monster(row[0], row[1], row[2], row[3])
+        )
+    # town = [Town(**record) for record in town_records]
+    
+    return monsterList
 
 #####################
 # PLAYER FUNCTIONS
@@ -419,12 +452,19 @@ def get_attack(attack_id):
 
 def get_all_attacks(session_id):
     connection = getConnection()
-    cursor.execute('SELECT * FROM Attack WHERE SessionID ="%s"', (session_id))
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM Attack WHERE SessionID = %(sessionID)s', {'sessionID': session_id})
     attack_records = cursor.fetchall()
-    attack = [Attack(**record) for record in attack_records]
+    attackList = []
+
     cursor.close()
     connection.close()
-    return attack
+    for row in attack_records:
+        attackList.append(
+            Attack(row[0], row[1], row[2], row[3])
+        )
+    
+    return attackList
 
 def create_player_attack(attack_id, player_id):
     connection = getConnection()

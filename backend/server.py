@@ -3,6 +3,7 @@
 
 from flask import Flask, jsonify, request
 from db import *
+import json
 
 app = Flask(__name__)
 
@@ -68,16 +69,24 @@ def get_all_sessions_route(user_id):
 # return specific session info
 @app.route('/session/<int:session_id>', methods=['GET'])
 def get_session_route(session_id):
+    session = get_session(session_id)
     town = get_all_towns(session_id)
-    player = get_all_players(session_id)
-    character = get_all_characters(session_id)
+    # player = get_all_players(session_id)
+    # character = get_all_characters(session_id)
     monster = get_all_monsters(session_id)
     attack = get_all_attacks(session_id)
 
     if session:
-        return jsonify(vars(town)+vars(player)+vars(character)+vars(monster)+vars(attack))
-    else:
-        return jsonify({'error': 'Session not found'}, 404)
+        townList = []
+        for t in town:
+            townList.append(vars(t))
+        monsterList = []
+        for p in monster:
+            monsterList.append(vars(p))
+        attackList = []
+        for a in attack:
+            attackList.append(vars(a))
+        return json.dumps(townList + monsterList + attackList)
 
 @app.route('/session', methods=['POST'])
 def create_session_route():
@@ -233,6 +242,15 @@ def get_attack_route(attack_id):
         return jsonify(vars(attack))
     else:
         return jsonify({'error': 'Attack not found'}, 404)
+    
+# returns all attacks
+@app.route('/attacks', methods=['GET'])
+def get_all_attacks_route():
+    attacks = get_all_attacks()
+    if attacks:
+      return jsonify(attacks)
+    else:
+      return jsonify({'error': 'Attacks not found'}, 404)
 
 @app.route('/attack/<int:attack_id>', methods=['DELETE'])
 def delete_attack_route():

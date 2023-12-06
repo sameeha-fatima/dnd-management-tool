@@ -15,7 +15,7 @@ function Player(props) {
     const [alignment, setAlignment] = useState('');
     const [characterId, setCharacterId] = useState('');
 
-    const [characterName, setCharacterName] = useState('');
+    const [playerName, setPlayerName] = useState('');
     const [job, setJob] = useState('');
     const [race, setRace] = useState('');
     const [sessionId, setSessionId] = useState('');
@@ -28,6 +28,11 @@ function Player(props) {
     const [wisdom, setWisdom] = useState('');
     const [charisma, setCharisma] = useState('');
 
+    const [selectedAttackValue, setSelectedAttackValue] = useState('');
+    const [allAttacks, setAttacks] = useState([]);
+    const [selectedAttackIDsList, setselectedAttackIDsList] = useState([]);
+
+/**  This is meant to either pre-fill the form or leave each item blank
     useEffect(() => {
         fetch(`../src/backend/get_player_route?PlayerID=${props.PlayerID}`)
         .then(response => response.json())
@@ -80,6 +85,17 @@ function Player(props) {
         });
 
     }, [props.PlayerID])
+*/
+
+    //Get all attacks
+    useEffect(() => {
+        // Fetch data from your API
+        fetch("/attacks")
+          .then(response => response.json())
+          .then(allAttacks => setAttacks(allAttacks))
+          .catch(error => console.error('Error fetching attack data:', error));
+      }, []); 
+    
 
     const submitForm = () => {
         const playerData = {
@@ -108,6 +124,35 @@ function Player(props) {
             Charisma: charisma,
         };
 
+        const dataToSend = {
+            strength: strength,
+            dexterity: dexterity,
+            constitution: constitution,
+            intelligence: intelligence,
+            wisdom: wisdom,
+            charisma: charisma,
+            character_name: playerName,
+            job: job,
+            race: race,
+            session_id: sessionId,
+            _class: _class,
+            alignment: alignment,
+            attacks : selectedAttackIDsList,
+        };
+
+        //create the monster object
+        fetch("/player", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataToSend),
+        })
+        .catch(error => {
+            console.error('Error: ', error)
+        })
+
+/**  
         fetch('../src/backend/update_stat', {
             method: 'PUT',
             headers: {
@@ -152,6 +197,7 @@ function Player(props) {
                 console.error('Error: ', response.statusText)
             }
         })
+*/        
     }
     
     const changeRace = (event) => {
@@ -220,6 +266,27 @@ function Player(props) {
                 <input type="text" id="wisdom" value={wisdom} onChange={changeWisdom}/>
                 <label htmlFor="charisma">Charisma: </label>
                 <input type="text" id="charisma" value={charisma} onChange={changeCharisma}/>
+
+                <label>Select an attack:</label>
+                    <select value={selectedAttackValue} onChange={handleAttackSelection}>
+                        <option value="">Select...</option>
+                        {allAttacks.map(item => (
+                        <option key={item.id} value={item.value}>
+                            {item.label} 
+                        </option>
+                        ))}
+                    </select>
+
+                    <p>Selected Attack: {selectedAttackValue}</p>
+
+                    <div>
+                        <h2>Selected Attacks:</h2>
+                        <ul>
+                            {selectedAttackIDsList.map((item, index) => (
+                                <li key={index}>{item}</li>
+                            ))}
+                        </ul>
+                    </div>
 
                 <button onClick={submitForm}>Submit</button>
             </div>
