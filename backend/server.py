@@ -172,7 +172,7 @@ def delete_town_route():
 # MONSTER FUNCTIONS
 #####################
 @app.route('/monster', methods=['POST'])
-def get_monster_route():
+def create_monster_route():
     data = request.get_json()
 
     strength = data.get('strength')
@@ -246,7 +246,7 @@ def delete_attack_route():
 # PLAYER FUNCTIONS
 #####################
 @app.route('/player', methods=['POST'])
-def get_player_route():
+def create_player_route():
     data = request.get_json()
 
     strength = data.get('strength')
