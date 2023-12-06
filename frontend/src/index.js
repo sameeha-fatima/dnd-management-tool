@@ -6,6 +6,8 @@ import Login from './Components/login';
 import CreateAccount from './Components/auth/createAccount/createAccount';
 import SessionLayout from './Components/Session/SessionOverview/Layout/SessionLayout';
 import SessionControl from './Components/sessionControl';
+import AddEntity from './Components/AddEntity';
+import EditEntity from './Components/EditEntity';
 
 import {
     createBrowserRouter,
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
     {
         path: "/sessionControl",
         element: <SessionControl></SessionControl>
+    },
+    {
+        path: "/addEntity",
+        element: <AddEntity></AddEntity>
+    },
+    {
+        path: "/editEntity",
+        element: <EditEntity></EditEntity>
     },
 ]);
 

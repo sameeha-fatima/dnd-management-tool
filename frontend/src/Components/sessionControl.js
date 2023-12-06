@@ -1,4 +1,4 @@
-import { React, useReducer, useRef } from 'react';
+import { React, useReducer, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 
@@ -12,6 +12,14 @@ const GridContainer = styled.div`
 const Title = styled.h1`
     text-align: center;
     padding-top: 75px;
+    font-family: Garamond, Georgia, serif;
+    font-size: 40px;
+    text-decoration: underline double
+`;
+
+const ESTitle = styled.h1`
+    text-align: center;
+    padding-top: 115px;
     font-family: Garamond, Georgia, serif;
     font-size: 40px;
     text-decoration: underline double
@@ -67,7 +75,7 @@ function reducer(state, action) {
         case 'set_name': {
             return {
                 ...state,
-                username: action.payload
+                name: action.payload
             };
         }
     }
@@ -75,9 +83,18 @@ function reducer(state, action) {
 
 function SessionControl(props) {
     const navigation = useNavigate();
-    const [state, dispatch] = useReducer(reducer, credentialsFormat);
+    const [state, dispatch] = useReducer(reducer, nameFormat);
+    const [sessionList, setSessionList] = useState([]);
+    const [session, setSession] = useState('');
     const formRef = useRef();
-//  const sessionList = api call for session list
+
+    fetch('../src/backend/get_all_sessions_route')
+    .then(response => response.json())
+    .then(data => setSessionList(data))
+    .catch(error => {
+        console.error('Error: ', error)
+    })
+
     return(
         <GridContainer>
             <NSConstainer>
@@ -91,13 +108,13 @@ function SessionControl(props) {
                 </form>
             </NSConstainer>
             <ESBackground>
-                <Title>Existing Session</Title>
+                <ESTitle>Existing Session</ESTitle>
                 <form action="/action_page.php">
                     <br></br>
-                    <select name="session" id="session">
-                        <option value="Select Session">Select Session</option>
-                        <option value="Session1">Session1</option>
-                    </select><br></br><br></br><br></br>
+                    <select name="EntityType" id="EntityTypeSelect">
+                        <option disabled selected value> -- select an option -- </option>
+                        
+                    </select>
                     <Button type="submit">Enter Session</Button>
                 </form>
             </ESBackground>
