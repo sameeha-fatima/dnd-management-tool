@@ -1,4 +1,4 @@
-import { React, useReducer, useRef } from 'react';
+import { React, useReducer, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 
@@ -87,6 +87,7 @@ function reducer(state, action) {
 
 function Login(props) {
     const [state, dispatch] = useReducer(reducer, credentialsFormat);
+    const [user, setUser] = useState('');
     const formRef = useRef();
     const navigation = useNavigate();
 
@@ -95,11 +96,28 @@ function Login(props) {
             return;
         }
         //do api call. If login creds are correct redirect to session control page, if not show error that login creds are invalid
-        // if (user != null) {
-        //     () => navigation("/sessionControl", {state: user.userId})
-        // } else {
-        //     return "error: invalid username or password";
-        // }
+        const requestData = {
+            username: state.username,
+            password: state.password,
+        };
+        
+        fetch('../src/backend/login_route', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData),
+        })
+        .then(response => response.json())
+        .then(data => setUser(data))
+        .catch(error => {
+            console.error('Error: ', error)
+        })
+        if (state.user != '') {
+            () => navigation("/sessionControl", {state: user.userId})
+        } else {
+            return "error: invalid username or password";
+        }
     }
 
     return(

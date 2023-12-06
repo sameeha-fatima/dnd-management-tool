@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AttackControl from "./AttackControl";
 import Character from "./character";
+import styled from 'styled-components';
 
 const GridContainer = styled.div`
     display: grid;
@@ -42,6 +43,10 @@ const Select = styled.select`
 function AddEntity(props) {
     const [type, setType] = useState('');
 
+    const handleChange = (e) => {
+        setType(e.target.value);
+    };
+
     let editScreen;
     if(type == "Character") {
         editScreen = <Character />;
@@ -51,9 +56,9 @@ function AddEntity(props) {
     // else if(type == "Monster") {
     //     editScreen = <MonsterControl />;
     // }
-    // else if(type == "Town") {
-    //     editScreen = <TownControl />;
-    // }
+    else if(type == "Town") {
+        editScreen = <TownControl />;
+    }
     // else if(type == "Player") {
     //     editScreen = <PlayerControl />;
     // }
@@ -68,7 +73,7 @@ function AddEntity(props) {
                 <div>
                     <div></div>
                     <label for="EntityTypeSelect">Search</label>
-                    <Select name="EntityType" id="EntityTypeSelect" onChange={setType(value)}>
+                    <Select name="EntityType" id="EntityTypeSelect" onChange={handleChange}>
                         <option disabled selected value> -- select an option -- </option>
                         <option value="Character">Character</option>
                         <option value="Monster">Monster</option>
