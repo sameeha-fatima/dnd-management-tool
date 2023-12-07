@@ -36,7 +36,7 @@ const LoginLabel = styled.label`
 
 const LoginInput = styled.input` font-size: medium; `;
 
-const LoginForm = styled.form` text-align: center; `;
+const LoginForm = styled.div` text-align: center; `;
 
 const NUBackground = styled.div` 
     background-color: lightgrey;
@@ -124,12 +124,13 @@ function Login(props) {
         <GridContainer>
             <div>
                 <Title>Login</Title>
-                <LoginLabel for="username">Username</LoginLabel><br></br>
-                <LoginInput id="username" type='text' placeholder="username" value={state.username} onChange={(event) => dispatch({ type: 'set_username', payload: event.target.value })}></LoginInput><br></br><br></br>
-                <LoginLabel for="password">Password</LoginLabel><br></br>
-                <LoginInput id="password" type='text' placeholder="password" value={state.password} onChange={(event) => dispatch({ type: 'set_password', payload: event.target.value })}></LoginInput><br></br><br></br>
-                <LoginButton onClick={loginUser}>Login</LoginButton>
-
+                <LoginForm>
+                    <LoginLabel for="username">Username</LoginLabel><br></br>
+                    <LoginInput id="username" type='text' placeholder="username" value={state.username} onChange={(event) => dispatch({ type: 'set_username', payload: event.target.value })}></LoginInput><br></br><br></br>
+                    <LoginLabel for="password">Password</LoginLabel><br></br>
+                    <LoginInput id="password" type='text' placeholder="password" value={state.password} onChange={(event) => dispatch({ type: 'set_password', payload: event.target.value })}></LoginInput><br></br><br></br>
+                    <LoginButton onClick={loginUser}>Login</LoginButton>
+                </LoginForm>
             </div>
             <NUBackground>
                 <NUTitle>New User?</NUTitle>

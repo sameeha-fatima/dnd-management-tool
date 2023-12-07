@@ -52,6 +52,13 @@ const CreateAccountButton = styled.button`
     }
 `;
 
+const Title = styled.h1`
+    text-align: center;
+    font-family: Garamond, Georgia, serif;
+    font-size: 40px;
+    text-decoration: underline double
+`;
+
 
 const credentialsFormat = {
     firstName: "",
@@ -121,7 +128,7 @@ function CreateAccount(props) {
     return (
         <PageContainer>
             <CreateAccountContainer>
-                <h1>Create Account</h1>
+                <Title>Create Account</Title>
                 <FromGrid ref={formRef}>
                     <LabelContainer>
                         <label for="firstName">First Name</label>

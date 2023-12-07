@@ -1,11 +1,10 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { useState, useReducer, useRef, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 
 const GridContainer = styled.div`
     height: 300px;
     border: solid;
-    background-color: grey;
 `;
 
 const Title = styled.h1`
@@ -89,8 +88,8 @@ function TownControl(props) {
         <GridContainer>
             <Title>Town</Title><div></div>
             <form ref={formRef}>
-                <Label for="town name">Name</Label><br></br>
-                <input id="town name" type='text' placeholder="Name" value={state.name} onChange={(event) => dispatch({ type: 'set_name', payload: event.target.value })}>{state.town.town_name}</input>
+                <label for="town name">Name</label><br></br>
+                <input id="town name" type='text' placeholder="Name" value={state.name} onChange={(event) => dispatch({ type: 'set_name', payload: event.target.value })}></input>
                 <Button type="submit" onClick={addTown}>Add</Button>
             </form>
         </GridContainer>

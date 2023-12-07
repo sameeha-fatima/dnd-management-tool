@@ -10,6 +10,10 @@ const GridContainer = styled.div`
     border: solid;
 `;
 
+const FormContainer = styled.div`
+    text-align: center;
+`;
+
 function Character(props) {
     const [name, setName] = useState('');
     const [race, setRace] = useState('');
@@ -159,6 +163,7 @@ const changeCharisma = (event) => {
         <GridContainer>
             <div>
                 <h1>Character</h1>
+                <FormContainer>
                     <label htmlFor="name">Name: </label>
                     <input type="text" id="name" value={name} onChange={changeName}/>
                     <label htmlFor="race">Race: </label>
@@ -180,6 +185,7 @@ const changeCharisma = (event) => {
                     <input type="text" id="charisma" value={charisma} onChange={changeCharisma}/>
 
                     <button onClick={submitForm}>Submit</button>
+                </FormContainer>
             </div>
         </GridContainer>
     );

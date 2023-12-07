@@ -223,7 +223,7 @@ const handleAttackSelection = (event) => {
     return (
         <GridContainer>
             <div>
-                <Title>Monster</Title>
+                <h1>Monster</h1>
                     <label htmlFor="name">Name: </label>
                     <input type="text" id="name" value={name} onChange={changeName}/>
                     <label htmlFor="attack">Attacks: </label>

@@ -32,6 +32,18 @@ function Player(props) {
     const [allAttacks, setAttacks] = useState([]);
     const [selectedAttackIDsList, setselectedAttackIDsList] = useState([]);
 
+    const handleAttackSelection = (event) => {
+        const selectedValue = event.target.id; //use id instead of value to look at attackID
+    
+        //update which attack is currently selected
+        setSelectedAttackValue(selectedValue);
+    
+        //if the newly selected item is not on the list, add it
+        if (selectedValue && !selectedAttackIDsList.includes(selectedValue)) {
+            setselectedAttackIDsList([...selectedAttackIDsList, selectedValue]);
+        }
+    };
+
 /**  This is meant to either pre-fill the form or leave each item blank
     useEffect(() => {
         fetch(`../src/backend/get_player_route?PlayerID=${props.PlayerID}`)
