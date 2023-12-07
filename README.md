@@ -45,3 +45,7 @@ Session Control path: "/sessionControl/:userID"<br>
 Session Editing path: "/session/:userID/:sessionId"<br>
 Add Entity path: "/addEntity"<br>
 Edit Entity path: "/editEntity"
+
+## Existing User Credentials to Test with
+Username: theGoat23 Password: password<br>
+Username: bestTA Password: 12345678
