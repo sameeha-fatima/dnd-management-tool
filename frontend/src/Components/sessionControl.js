@@ -118,25 +118,23 @@ function SessionControl(props) {
     const redirectSession = () => {
         console.log(session)
         if (session != undefined && session != null && session != "") {
-            navigation(`/session/${session}`)
+            navigation(`/session/${routeParams.userID}/${session}`)
         }
     }
 
     const createNewSession = () => {
-        // navigation(`/session/${}`)
+        if(state.name == null || state.name == "") {
+            return;
+        }
+
         fetch("/session", {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 session_name: state.name,
-                user_id: state.lastName,
+                user_id: Number(routeParams.userID),
             })
         })
-            .then((res) => res.text())
-            .then((res) => {
-                console.log(res)
-                navigation('/')
-            });
     }
 
     return (
@@ -144,12 +142,10 @@ function SessionControl(props) {
             <NSConstainer>
                 <LogoutButton onClick={() => navigation("/")}>LOGOUT</LogoutButton>
                 <Title>New Session</Title>
-                <form ref={formRef}>
-                    <Label for="session name">New Session</Label><br></br>
-                    <input id="session name" type='text' placeholder="Session Name" value={state.name} onChange={(event) => dispatch({ type: 'set_name', payload: event.target.value })}></input>
-                    <br></br><br></br><br></br>
-                    <Button type="submit" onClick={createNewSession}>Create New Session</Button>
-                </form>
+                <Label for="session name">New Session</Label><br></br>
+                <input id="session name" type='text' placeholder="Session Name" value={state.name} onChange={(event) => dispatch({ type: 'set_name', payload: event.target.value })}></input>
+                <br></br><br></br><br></br>
+                <Button onClick={createNewSession}>Create New Session</Button>
             </NSConstainer>
             <ESBackground>
                 <ESTitle>Existing Session</ESTitle>

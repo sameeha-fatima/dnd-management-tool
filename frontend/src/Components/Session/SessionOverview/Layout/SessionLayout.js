@@ -1,13 +1,15 @@
 import { React, useState, useEffect } from "react";
 import SessionHeader from "../Header/SessionHeader";
 import EntityList from "../SessionEntity/EntityList";
+import { useParams } from "react-router-dom";
 
 function SessionLayout() {
     const [entityList, setEntityList] = useState([])
     const [entityFilter, setEntityFilter] = useState(null);
+    const routeParams = useParams();
 
     useEffect(() => {
-        fetch("/session/1", {
+        fetch(`/session/${routeParams.sessionId}`, {
             method: "GET"
         })
             .then((res) => res.json())
@@ -35,7 +37,7 @@ function SessionLayout() {
                     }
                 })
                 setEntityList(entityList)
-            });
+            }).catch((err) => console.log(err))
     }, [])
 
     const reportValue = (event) => {

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from 'styled-components';
 import EntityFilterDropDown from "./EntityFilterDropDown/EntityFilterDropDown";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const HeaderContainer = styled.div`
     display: flex;
@@ -36,6 +36,7 @@ const StyledButton = styled.button`
 function SessionHeader(props) {
 
     const navigation = useNavigate();
+    const routeParams = useParams();
 
     const deleteSession = () => {
         if (window.confirm("Are you sure you want to delete this session?") == false) {
@@ -46,12 +47,12 @@ function SessionHeader(props) {
     return (
         <HeaderContainer>
             <UpperHeaderContainer>
-                <StyledButton style={{"background-color": 'blue'}} onClick={() => navigation("/sessionControl")}>Home</StyledButton>
+                <StyledButton style={{"background-color": 'blue'}} onClick={() => navigation(`/sessionControl/${routeParams.userID}`)}>Home</StyledButton>
                 <StyledButton style={{"background-color": 'red'}} onClick={deleteSession}>Delete Session</StyledButton>
             </UpperHeaderContainer>
             <LowerHeaderContainer>
                 <EntityFilterDropDown reportValue={props.reportValue}></EntityFilterDropDown>
-                <StyledButton style={{"background-color": 'green'}}>Add Entity</StyledButton>
+                <StyledButton style={{"background-color": 'green'}} onClick={() => navigation('/addEntity')}>Add Entity</StyledButton>
             </LowerHeaderContainer>
         </HeaderContainer>
 
