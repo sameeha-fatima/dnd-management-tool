@@ -116,12 +116,20 @@ def get_all_sessions(user_id):
     try:
         connection = getConnection()
         cursor = connection.cursor(dictionary=True)
-        cursor.execute('SELECT * FROM Session WHERE User = "%s"', (user_id))
+        cursor.execute('SELECT * FROM Session WHERE UserID =  %(userID)s', {'userID': user_id})
+
         session_records = cursor.fetchall()
-        session = [Session(**record) for record in session_records]
+        
+        sessionList = []
+        
+        for row in session_records:
+            sessionList.append(
+                Session(row['SessionID'], row['SessionName'], row['UserID'])
+            )
+        
         cursor.close()
         connection.close()
-        return session
+        return sessionList
     except:
         print('not working')
 
