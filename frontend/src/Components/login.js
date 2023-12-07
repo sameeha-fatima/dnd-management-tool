@@ -113,12 +113,8 @@ function Login(props) {
         .catch(error => {
             console.error('Error: ', error)
         })
-        console.log(state.user)
-        if (state.user != '') {
-            () => navigation("/sessionControl", {userId: user.userId})
-        } else {
-            return "error: invalid username or password";
-        }
+        console.log(state.user);
+        () => navigation("/sessionControl", {userId: user.userId});
     }
 
     return(
