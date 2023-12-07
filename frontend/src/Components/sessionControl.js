@@ -119,7 +119,7 @@ function SessionControl(props) {
                     <br></br>
                     <select name="EntityType" id="EntityTypeSelect" onChange={handleChange}>
                         <option disabled selected value> -- select an option -- </option>
-                        {state.sessionList.map(session =>
+                        {sessionList.map(session =>
                             <option key={session.session_id} value={session.session_name}></option>
                         )}
                     </select>
