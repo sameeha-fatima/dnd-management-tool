@@ -116,12 +116,20 @@ def get_all_sessions(user_id):
     try:
         connection = getConnection()
         cursor = connection.cursor(dictionary=True)
-        cursor.execute('SELECT * FROM Session WHERE User = "%s"', (user_id))
+        cursor.execute('SELECT * FROM Session WHERE UserID =  %(userID)s', {'userID': user_id})
+
         session_records = cursor.fetchall()
-        session = [Session(**record) for record in session_records]
+
+        sessionList = []
+        
+        for row in session_records:
+            sessionList.append(
+                Session(row['SessionID'], row['SessionName'], row['UserID'])
+            )
+        
         cursor.close()
         connection.close()
-        return session
+        return sessionList
     except:
         print('not working')
 
@@ -454,16 +462,20 @@ def delete_attack(attack_id):
     connection.close()
 
 def get_attack(attack_id):
-    connection = getConnection()
-    cursor.execute('SELECT * FROM Attack WHERE AttackID = %s', (attack_id,))
-    attack_id = cursor.fetchone()
-    cursor.close()
-    connection.close()
+    try:
+        connection = getConnection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute('SELECT * FROM attack WHERE AttackID = %s', (attack_id,))
+        attack_id = cursor.fetchone()
+        cursor.close()
+        connection.close()
 
-    if attack_id:
-        return Attack(**attack_id)
-    else:
-        return None
+        if attack_id:
+            return Attack(attack_id['AttackID'], attack_id['AttackName'], attack_id['Damage'], attack_id['SessionID'])
+        else:
+            return None
+    except:
+        print('not working')
 
 def get_all_attacks(session_id):
     connection = getConnection()

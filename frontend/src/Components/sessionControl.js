@@ -1,4 +1,4 @@
-import { React, useReducer, useRef, useState } from 'react';
+import { React, useReducer, useRef, useState, useEffect } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import styled from 'styled-components';
 
@@ -90,46 +90,73 @@ function SessionControl(props) {
     const routeParams = useParams()
     console.log(routeParams.userID)
 
-    fetch(`/session_all/${routeParams.userID}`, {
-        method: "GET"
-    })
-    .then(response => response.text())
-    .then((res) => {
-        console.log(res)
-    })
-    .then(data => setSessionList(data))
-    .catch(error => {
-        console.error('Error: ', error)
-    });
+    useEffect(() => {
+        fetch(`/session_all/${routeParams.userID}`, {
+            method: "GET"
+        })
+            .then(response => response.json())
+            .then((res) => {
+                console.log(res);
+                if (res == null || res.length == 0 || !res[0].hasOwnProperty("session_id")) {
+                    console.log("error");
+                    return;
+                }
+
+                console.log("success")
+                setSessionList(res);
+            })
+            .catch(error => {
+                console.error('Error: ', error)
+            });
+    }, [])
 
     const handleChange = (e) => {
-        setSession(e.target.key);
+        console.log(e.target.value)
+        setSession(e.target.value);
     };
 
-    return(
+    const redirectSession = () => {
+        console.log(session)
+        if (session != undefined && session != null && session != "") {
+            navigation(`/session/${routeParams.userID}/${session}`)
+        }
+    }
+
+    const createNewSession = () => {
+        if(state.name == null || state.name == "") {
+            return;
+        }
+
+        fetch("/session", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                session_name: state.name,
+                user_id: Number(routeParams.userID),
+            })
+        })
+    }
+
+    return (
         <GridContainer>
             <NSConstainer>
                 <LogoutButton onClick={() => navigation("/")}>LOGOUT</LogoutButton>
                 <Title>New Session</Title>
-                <form ref={formRef}>
-                    <Label for="session name">New Session</Label><br></br>
-                    <input id="session name" type='text' placeholder="Session Name" value={state.name} onChange={(event) => dispatch({ type: 'set_name', payload: event.target.value })}></input>
-                    <br></br><br></br><br></br>
-                    <Button type="submit" onClick={() => navigation("/session/:sessionId")}>Create New Session</Button>
-                </form>
+                <Label for="session name">New Session</Label><br></br>
+                <input id="session name" type='text' placeholder="Session Name" value={state.name} onChange={(event) => dispatch({ type: 'set_name', payload: event.target.value })}></input>
+                <br></br><br></br><br></br>
+                <Button onClick={createNewSession}>Create New Session</Button>
             </NSConstainer>
             <ESBackground>
                 <ESTitle>Existing Session</ESTitle>
-                <form action="/action_page.php">
-                    <br></br>
-                    <select name="EntityType" id="EntityTypeSelect" onChange={handleChange}>
-                        <option disabled selected value> -- select an option -- </option>
-                        {sessionList.map(session =>
-                            <option key={session.session_id} value={session.session_name}></option>
-                        )}
-                    </select>
-                    <Button type="submit" onClick={() => navigation("/session/:{session}", {session_id: session})}>Enter Session</Button>
-                </form>
+                <br></br>
+                <select name="EntityType" id="EntityTypeSelect" onChange={handleChange}>
+                    <option disabled selected value> -- select an option -- </option>
+                    {sessionList.map(session =>
+                        <option key={session.session_id} value={session.session_id}>{session.session_name}</option>
+                    )}
+                </select>
+                <Button onClick={redirectSession}>Enter Session</Button>
             </ESBackground>
         </GridContainer>
     )
