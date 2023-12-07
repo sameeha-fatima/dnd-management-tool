@@ -28,7 +28,7 @@ const router = createBrowserRouter([
         element: <SessionLayout></SessionLayout>
     },
     {
-        path: "/sessionControl",
+        path: "/sessionControl/:userID",
         element: <SessionControl></SessionControl>
     },
     {

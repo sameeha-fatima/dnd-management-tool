@@ -1,5 +1,5 @@
 import { React, useReducer, useRef, useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from 'styled-components';
 
 const GridContainer = styled.div`
@@ -87,11 +87,16 @@ function SessionControl(props) {
     const [sessionList, setSessionList] = useState([]);
     const [session, setSession] = useState('');
     const formRef = useRef();
+    const routeParams = useParams()
+    console.log(routeParams.userID)
 
-    fetch('../src/backen/session_all/{props.user_id}', {
+    fetch(`/session_all/${routeParams.userID}`, {
         method: "GET"
     })
-    .then(response => response.json())
+    .then(response => response.text())
+    .then((res) => {
+        console.log(res)
+    })
     .then(data => setSessionList(data))
     .catch(error => {
         console.error('Error: ', error)

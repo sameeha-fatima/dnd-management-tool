@@ -92,9 +92,6 @@ function Login(props) {
     const navigation = useNavigate();
 
     const loginUser = () => {
-        if (!formRef.current.reportValidity()) {
-            return;
-        }
         //do api call. If login creds are correct redirect to session control page, if not show error that login creds are invalid
         const requestData = {
             username: state.username,
@@ -108,26 +105,31 @@ function Login(props) {
             },
             body: JSON.stringify(requestData),
         })
-        .then(response => response.json())
-        .then(data => setUser(data))
-        .catch(error => {
-            console.error('Error: ', error)
-        })
-        console.log(state.user);
-        () => navigation("/sessionControl", {userId: user.userId});
+            .then(response => response.json())
+            .then((res) => {
+                console.log(res);
+                if(res == null || !res.hasOwnProperty("user_id")){
+                    console.error('Error: ', 'invalid username or password')
+                    return;
+                }
+                else {
+                    setUser(res)
+                    navigation(`/sessionControl/${res.user_id}`);
+                }
+            })
+            .catch(error => console.log(error))
     }
 
-    return(
+    return (
         <GridContainer>
             <div>
                 <Title>Login</Title>
-                <LoginForm ref={formRef}>
-                    <LoginLabel for="username">Username</LoginLabel><br></br>
-                    <LoginInput id="username" type='text' placeholder="username" value={state.username} onChange={(event) => dispatch({ type: 'set_username', payload: event.target.value })}></LoginInput><br></br><br></br>
-                    <LoginLabel for="password">Password</LoginLabel><br></br>
-                    <LoginInput id="password" type='text' placeholder="password" value={state.password} onChange={(event) => dispatch({ type: 'set_password', payload: event.target.value })}></LoginInput><br></br><br></br>
-                    <LoginButton type="submit" onClick={loginUser}>Login</LoginButton>
-                </LoginForm>
+                <LoginLabel for="username">Username</LoginLabel><br></br>
+                <LoginInput id="username" type='text' placeholder="username" value={state.username} onChange={(event) => dispatch({ type: 'set_username', payload: event.target.value })}></LoginInput><br></br><br></br>
+                <LoginLabel for="password">Password</LoginLabel><br></br>
+                <LoginInput id="password" type='text' placeholder="password" value={state.password} onChange={(event) => dispatch({ type: 'set_password', payload: event.target.value })}></LoginInput><br></br><br></br>
+                <LoginButton onClick={loginUser}>Login</LoginButton>
+
             </div>
             <NUBackground>
                 <NUTitle>New User?</NUTitle>
