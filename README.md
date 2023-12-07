@@ -10,7 +10,7 @@
 - Sean Yi 
 
 ## Database
-Import dnd.sql to mysql workbench
+Import dnd.sql to mysql workbench <br>
 In the project folder, copy .env-template and rename it. Then put your own credentials in the various fields
 
 ## Backend Setup
@@ -39,9 +39,9 @@ Run all three at the same time to use the application fully
 Application will run on localhost:3000
 
 ## Path Links
-Login path: "/"
-Create Account path: "/createAccount"
-Session Control path: "/sessionControl/:userID"
-Session Editing path: "/session/:userID/:sessionId"
-Add Entity path: "/addEntity"
+Login path: "/"<br>
+Create Account path: "/createAccount"<br>
+Session Control path: "/sessionControl/:userID"<br>
+Session Editing path: "/session/:userID/:sessionId"<br>
+Add Entity path: "/addEntity"<br>
 Edit Entity path: "/editEntity"
