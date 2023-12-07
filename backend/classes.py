@@ -7,8 +7,9 @@ class User:
         this.password = password
 
 class Session:
-    def __init__(this, session_id, user_id):
+    def __init__(this, session_id, session_name, user_id):
         this.session_id = session_id
+        this.session_name = session_name
         this.user_id = user_id
 
 class Town:

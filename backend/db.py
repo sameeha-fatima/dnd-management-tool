@@ -119,7 +119,7 @@ def get_all_sessions(user_id):
         cursor.execute('SELECT * FROM Session WHERE UserID =  %(userID)s', {'userID': user_id})
 
         session_records = cursor.fetchall()
-        
+
         sessionList = []
         
         for row in session_records:
