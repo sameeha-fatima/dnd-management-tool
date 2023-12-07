@@ -21,37 +21,43 @@ def getConnection():
 # USER FUNCTIONS
 #####################
 def login(username, password):
-    connection = getConnection()
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM dnd_tool.user WHERE Username = %s;', (username,))
-    user = cursor.fetchone()
-    #unpack the user tuple
-    [user_id, first_name, last_name, user_name, encrypted_password] = user.values()
-    hash_object = hashlib.sha256()
-    # hash the input password
-    hash_object.update(password.encode())
-    hash_password = hash_object.hexdigest()
-    cursor.close()
-    connection.close()
-    #check if the input password matches the saved password
-    if hash_password == encrypted_password:
-        #return user with userID if correct login
-        return User(user['UserID'], user['FirstName'], user['LastName'], user['Username'], user['Password'])
-    else:
-        #return None or an error b/c didn't sign in correctly
-        return None
+    try:
+        connection = getConnection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute('SELECT * FROM dnd_tool.user WHERE Username = %s;', (username,))
+        user = cursor.fetchone()
+        #unpack the user tuple
+        [user_id, first_name, last_name, user_name, encrypted_password] = user.values()
+        hash_object = hashlib.sha256()
+        # hash the input password
+        hash_object.update(password.encode())
+        hash_password = hash_object.hexdigest()
+        cursor.close()
+        connection.close()
+        #check if the input password matches the saved password
+        if hash_password == encrypted_password:
+            #return user with userID if correct login
+            return User(user['UserID'], user['FirstName'], user['LastName'], user['Username'], user['Password'])
+        else:
+            #return None or an error b/c didn't sign in correctly
+            return None
+    except:
+        print('not working')
 
 def create_user(first_name, last_name, username, password):
-    connection = getConnection()
-    cursor = connection.cursor()
-    hash_object = hashlib.sha256()
-    #hash the password
-    hash_object.update(password.encode())
-    hash_password = hash_object.hexdigest()
-    cursor.execute('INSERT INTO User (FirstName, LastName, Username, Password) VALUES (%s, %s, %s, %s)', (first_name, last_name, username, hash_password))
-    connection.commit()
-    cursor.close()
-    connection.close()
+    try:
+        connection = getConnection()
+        cursor = connection.cursor()
+        hash_object = hashlib.sha256()
+        #hash the password
+        hash_object.update(password.encode())
+        hash_password = hash_object.hexdigest()
+        cursor.execute('INSERT INTO User (FirstName, LastName, Username, Password) VALUES (%s, %s, %s, %s)', (first_name, last_name, username, hash_password))
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except:
+        print('not working')
     
 # def get_user(user_id):
 #     connection = getConnection()
@@ -88,12 +94,15 @@ def delete_user(user_id):
 # SESSION FUNCTIONS
 #####################
 def create_session(session_name, user_id):
-    connection = getConnection()
-    cursor = connection.cursor()
-    cursor.execute('INSERT INTO Session (SessionName, UserID) VALUES (%s, %s)', (session_name, user_id))
-    connection.commit()
-    cursor.close()
-    connection.close()
+    try:
+        connection = getConnection()
+        cursor = connection.cursor()
+        cursor.execute('INSERT INTO Session (SessionName, UserID) VALUES (%s, %s)', (session_name, user_id))
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except:
+        print('not working')
 
 def delete_session(session_id):
     connection = getConnection()
@@ -104,29 +113,35 @@ def delete_session(session_id):
     connection.close()
 
 def get_all_sessions(user_id):
-    connection = getConnection()
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM Session WHERE User = "%s"', (user_id))
-    session_records = cursor.fetchall()
-    session = [Session(**record) for record in session_records]
-    cursor.close()
-    connection.close()
-    return session
+    try:
+        connection = getConnection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute('SELECT * FROM Session WHERE User = "%s"', (user_id))
+        session_records = cursor.fetchall()
+        session = [Session(**record) for record in session_records]
+        cursor.close()
+        connection.close()
+        return session
+    except:
+        print('not working')
 
 def get_session(session_id):
-    connection = getConnection()
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM Session WHERE SessionID = %(sessionID)s', {'sessionID': session_id})
-    session = cursor.fetchone()
+    try:
+        connection = getConnection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute('SELECT * FROM Session WHERE SessionID = %(sessionID)s', {'sessionID': session_id})
+        session = cursor.fetchone()
 
-    newName = session['SessionID']
-    cursor.close()
-    connection.close()
+        newName = session['SessionID']
+        cursor.close()
+        connection.close()
 
-    if session_id:
-        return Session(session['SessionID'], session['SessionName'], session['UserID'])
-    else:
-        return None
+        if session_id:
+            return Session(session['SessionID'], session['SessionName'], session['UserID'])
+        else:
+            return None
+    except:
+        print('not working')
 
 #####################
 # TOWN FUNCTIONS
