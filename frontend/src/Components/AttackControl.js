@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { React, useReducer, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const PageContainer = styled.div`
     display: flex;
@@ -76,6 +77,8 @@ function reducer(state, action) {
 function AttackControl(props) {
     const [state, dispatch] = useReducer(reducer, attackFormat);
     const formRef = useRef();
+    const routeParams = useParams();
+    const navigation = useNavigate();
 
     //Checks the validity of user inputs and creates a new user account
     const saveFunction = () => {
@@ -83,7 +86,17 @@ function AttackControl(props) {
             return;
         }
 
-        //do api call. If valid credentials, log user in and redirect to homepage. else, show message that username already exists
+        fetch("/attack", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                attack_name: state.name,
+                damage: Number(state.damage),
+                session_id: Number(routeParams.sessionId),
+            })
+        })
+        .then((res) => res.text())
+        .then((res) => console.log(res))
     }
 
     return (

@@ -53,6 +53,7 @@ function SessionHeader(props) {
             <LowerHeaderContainer>
                 <EntityFilterDropDown reportValue={props.reportValue}></EntityFilterDropDown>
                 <StyledButton style={{"background-color": 'green'}} onClick={() => navigation('/addEntity')}>Add Entity</StyledButton>
+                <StyledButton style={{"background-color": 'green'}} onClick={() => navigation(`/attack/${routeParams.sessionId}`)}>Add Attack</StyledButton>
             </LowerHeaderContainer>
         </HeaderContainer>
 

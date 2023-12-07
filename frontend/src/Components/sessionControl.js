@@ -135,6 +135,7 @@ function SessionControl(props) {
                 user_id: Number(routeParams.userID),
             })
         })
+        .then((res) => console.log(res))
     }
 
     return (

@@ -8,6 +8,7 @@ import SessionLayout from './Components/Session/SessionOverview/Layout/SessionLa
 import SessionControl from './Components/sessionControl';
 import AddEntity from './Components/AddEntity';
 import EditEntity from './Components/EditEntity';
+import AttackControl from './Components/AttackControl';
 
 import {
     createBrowserRouter,
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
     {
         path: "/editEntity",
         element: <EditEntity></EditEntity>
+    },
+    {
+        path: "/attack/:sessionId",
+        element: <AttackControl></AttackControl>
     },
 ]);
 
