@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { React, useReducer, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PageContainer = styled.div`
     display: flex;
@@ -91,6 +92,7 @@ function reducer(state, action) {
 function CreateAccount(props) {
     const [state, dispatch] = useReducer(reducer, credentialsFormat);
     const formRef = useRef();
+    const navigation = useNavigate()
 
     //Checks the validity of user inputs and creates a new user account
     const createAccount = () => {
@@ -111,6 +113,7 @@ function CreateAccount(props) {
             .then((res) => res.text())
             .then((res) => {
                 console.log(res)
+                navigation('/')
             });
 
     }
